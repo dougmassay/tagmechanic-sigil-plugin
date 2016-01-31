@@ -29,7 +29,7 @@ class guiConfig(tkinter.Toplevel):
 
         self.initUI()
 
-        self.protocol('WM_DELETE_WINDOW', self.quitApp)
+        # self.protocol('WM_DELETE_WINDOW', self.quitApp)
 
     def initUI(self):
         ''' Build the GUI and assign variables and handler functions to elements. '''
@@ -242,6 +242,7 @@ class guiConfig(tkinter.Toplevel):
         '''Clean up and close Widget'''
         self.grab_release()
         self.destroy()
+
 
 def main():
 

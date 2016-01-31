@@ -60,6 +60,7 @@ combobox_defaults = {
 }
 
 prefs = {}
+BAIL_OUT = False
 
 class guiMain(tkinter.Frame):
     def __init__(self, parent, bk):
@@ -94,7 +95,7 @@ class guiMain(tkinter.Frame):
         self.NO_ATTRIB_STR = 'No attributes ("naked" tag)'
         self.NO_CHANGE_STR = 'No change'
         self.context_menu = tkinter.Menu(self, tearoff=0, takefocus=0)
-        self.context_menu.add_command(label="Customize Plugin", command=self.showConfig)
+        self.context_menu.add_command(label='Customize Plugin', command=self.showConfig)
         self.parent.bind('<Button-3><ButtonRelease-3>', self.showMenu)
 
         body = tkinter.Frame(self)
@@ -193,8 +194,12 @@ class guiMain(tkinter.Frame):
 
         buttons = tkinter.Frame()
         self.gbutton = tkinter.Button(buttons, text='Process', command=self.cmdDo)
-        ToolTip(self.gbutton, msg='Apply your changes to the selected (x)html files in Book View.', delay=.4, follow=False)
+        ToolTip(self.gbutton, msg='Process the selected (x)html files in Book View with you choices.', delay=.4, follow=False)
         self.gbutton.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.BOTH, expand=True)
+        self.bbutton = tkinter.Button(buttons, text='Abort Changes', command=self.cmdBailOut)
+        ToolTip(self.bbutton, msg='Abort all modifications and exit.', delay=.4, follow=False)
+        self.bbutton.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.BOTH, expand=True)
+        self.bbutton.config(state='disabled')
         self.qbutton = tkinter.Button(buttons, text='Quit', command=self.quitApp)
         ToolTip(self.qbutton, msg='Close this dialog.', delay=.4, follow=False)
         self.qbutton.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.BOTH, expand=True)
@@ -209,6 +214,11 @@ class guiMain(tkinter.Frame):
 
     def showMenu(self, e):
         self.context_menu.post(e.x_root, e.y_root)
+
+    def cmdBailOut(self):
+        global BAIL_OUT
+        BAIL_OUT = True
+        self.quitApp()
 
     def cmdDo(self):
         '''The main event'''
@@ -271,8 +281,9 @@ class guiMain(tkinter.Frame):
         if self.copy_attrs.get():
             self.criteria['copy'] = True
 
-        # Disable the 'Process' button
+        # Disable the 'Process' button, disable the context customization menu
         self.gbutton.config(state='disabled')
+        self.context_menu.entryconfig('Customize Plugin', state='disabled')
 
         totals = 0
         self.clear_box()
@@ -310,6 +321,8 @@ class guiMain(tkinter.Frame):
 
         # report totals
         if totals:
+            self.qbutton.config(text='Commit & Exit')
+            self.bbutton.config(state='normal')
             self.showCmdOutput('Total occurrences found/changed: %d\n' % totals, 'totals')
         else:
             self.showCmdOutput('No changes made to book\n', 'totals')
@@ -402,7 +415,7 @@ class guiMain(tkinter.Frame):
 
     def showConfig(self):
         ''' Launch Customization Dialog '''
-        inputDialog = guiConfig(self, combobox_defaults)
+        guiConfig(self, combobox_defaults)
 
     def quitApp(self):
         '''Clean up and close Widget'''
@@ -468,6 +481,9 @@ def run(bk):
 
     # Save prefs to back to json
     bk.savePrefs(prefs)
+    if BAIL_OUT:
+        print ('Changes aborted by user.\n')
+        return -1
     return 0
 
 def main():
