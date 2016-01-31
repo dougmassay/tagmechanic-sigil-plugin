@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+<name>TagMechanic</name>
+<type>edit</type>
+<author>DiapDealer</author>
+<description>Manipulate Spans, Divs and other tags.</description>
+<engine>python3.4</engine>
+<engine>python2.7</engine>
+<version>0.3.2</version>
+<oslist>osx,unx,win</oslist>
+<autostart>true</autostart>
+<autoclose>true</autoclose>
+</plugin>
