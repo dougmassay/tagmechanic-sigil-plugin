@@ -29,8 +29,6 @@ class guiConfig(tkinter.Toplevel):
 
         self.initUI()
 
-        # self.protocol('WM_DELETE_WINDOW', self.quitApp)
-
     def initUI(self):
         ''' Build the GUI and assign variables and handler functions to elements. '''
         body = tkinter.Frame(self)

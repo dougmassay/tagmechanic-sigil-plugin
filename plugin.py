@@ -271,7 +271,7 @@ class guiMain(tkinter.Frame):
             msg = 'What--exactly--would that achieve?'
             return tkinter_msgbox.showerror(title, msg)
 
-        # Param 8 - new attributes to be written
+        # Param 8 - new attributes to be written (this is very fragile)
         self.criteria['new_str'] = self.attrStr_entry_value.get().replace("'", '"')
         if not len(self.criteria['new_str']):
             self.criteria['new_str'] = ''
