@@ -506,6 +506,7 @@ class guiMain(tkinter.Frame):
 
 
 def run(bk):
+    # Fail if no Text files are selected in Sigil's Book Browser
     count = 0
     for (typ, ident) in bk.selected_iter():
         if bk.id_to_mime(ident) == 'application/xhtml+xml':
@@ -513,6 +514,7 @@ def run(bk):
     if not count:
         print('No text files selected in Book Browser!')
         return -1
+
     global prefs
     prefs = bk.getPrefs()
 
