@@ -506,6 +506,13 @@ class guiMain(tkinter.Frame):
 
 
 def run(bk):
+    count = 0
+    for (typ, ident) in bk.selected_iter():
+        if bk.id_to_mime(ident) == 'application/xhtml+xml':
+            count += 1
+    if not count:
+        print('No text files selected in Book Browser!')
+        return -1
     global prefs
     prefs = bk.getPrefs()
 
