@@ -73,7 +73,7 @@ class MarkupParser(object):
                     p += 1
                 val = s[b:p]
                 p += 1
-            else :
+            else:
                 b = p
                 while s[p:p+1] not in ('>', '/', ' '):
                     p += 1

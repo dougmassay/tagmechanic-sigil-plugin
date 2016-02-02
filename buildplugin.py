@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim:ts=4:sw=4:softtabstop=4:smarttab:expandtab
 
-from __future__ import (unicode_literals, division, absolute_import,
-                        print_function)
+from __future__ import unicode_literals, division, absolute_import, print_function
 
 import os
 import sys
@@ -23,7 +22,7 @@ PLUGIN_FILES = ['dialogs.py',
             'plugin.py',
             'plugin.xml',
             'tk_tooltips.py',
-            'updatecheck.py',]
+            'updatecheck.py']
 
 def findVersion():
     _version_pattern = re.compile(r'<version>([^<]*)</version>')

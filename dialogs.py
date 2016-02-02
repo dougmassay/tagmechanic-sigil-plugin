@@ -5,8 +5,8 @@
 from __future__ import unicode_literals, division, absolute_import, print_function
 
 import sys
+from compatibility_utils import PY2
 
-PY2 = sys.version_info[0] == 2
 
 if PY2:
     import Tkinter as tkinter
@@ -18,12 +18,12 @@ else:
     text_type = str
 
 class guiConfig(tkinter.Toplevel):
-
     def __init__(self, parent, defaults):
         tkinter.Toplevel.__init__(self, parent, border=5)
         self.resizable(False, False)
         self.title('Plugin Customization')
         self.maingui = parent
+        # Copy combox values and their original defaults from main plugin.py
         self.temp_values = self.maingui.combobox_values
         self.defaults = defaults
 
@@ -34,6 +34,7 @@ class guiConfig(tkinter.Toplevel):
         body = tkinter.Frame(self)
         body.pack(fill=tkinter_constants.BOTH)
 
+        # All simple text entry widgets and their labels
         span_frame = tkinter.Frame(body, pady=3)
         span_label = tkinter.Label(span_frame, text='Choices to change "span" elements to:')
         span_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
@@ -131,6 +132,7 @@ class guiConfig(tkinter.Toplevel):
         self.attrs_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
         attrs_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
+        # Dialog buttonbox (three buttons)
         buttons = tkinter.Frame(body)
         self.gbutton = tkinter.Button(buttons, text='Apply and Close', command=self.cmdDo)
         self.gbutton.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.BOTH, expand=True)
@@ -140,8 +142,11 @@ class guiConfig(tkinter.Toplevel):
         self.dbutton.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.BOTH, expand=False)
         buttons.pack(side=tkinter_constants.BOTTOM, pady=5, fill=tkinter_constants.BOTH)
 
+        # Call the method that populates the textboxes
         self.populate(self.temp_values)
 
+        # This is bullshit that needs to be done to make the config dialog take
+        # focus from the main gui. Main should be helpless until config closes. Ugh!
         self.withdraw()
         self.transient(self.maingui)
         self.grab_set()
@@ -150,6 +155,8 @@ class guiConfig(tkinter.Toplevel):
         self.maingui.wait_window(self)
 
     def center(self):
+        '''Center the config window'''
+        # OMG centering windows with Tkinter sucks rocks!!
         self.update()
         w = self.winfo_reqwidth()
         h = self.winfo_reqheight()
@@ -158,6 +165,7 @@ class guiConfig(tkinter.Toplevel):
         self.geometry('{}x{}+{}+{}'.format(w, h, x, y))
 
     def populate(self, values):
+        '''Populate the text entry boxes'''
         self.span_value_entry.delete(0, tkinter_constants.END)
         self.span_value_entry.insert(0, ', '.join(values['span_changes']))
         self.div_value_entry.delete(0, tkinter_constants.END)
@@ -188,12 +196,15 @@ class guiConfig(tkinter.Toplevel):
         self.attrs_value_entry.insert(0, ', '.join(values['attrs']))
 
     def cmdCancel(self):
+        '''Close aborting any changes'''
         self.quitApp()
 
     def cmdDefaults(self):
+        '''Reset all settings to original plugin defaults'''
         self.populate(self.defaults)
 
     def cmdDo(self):
+        '''Grab any changes and store them'''
         tmp_list = self.span_value.get().strip(' ').split(',')
         self.temp_values['span_changes'] = [x.strip(' ') for x in tmp_list if x]
 
@@ -230,8 +241,10 @@ class guiConfig(tkinter.Toplevel):
         tmp_list = self.attrs_value.get().strip(' ').split(',')
         self.temp_values['attrs'] = [x.strip(' ') for x in tmp_list if x]
 
+        # Copy the temp settings back to the main gui's value prefs
         self.maingui.combobox_values = self.temp_values
 
+        # Refresh the main gui's comboboxes and close
         self.maingui.tag_change_actions(None)
         self.maingui.update_attrs_combo()
         self.quitApp()

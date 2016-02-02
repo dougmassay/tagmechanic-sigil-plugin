@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim:ts=4:sw=4:softtabstop=4:smarttab:expandtab
+
 from __future__ import unicode_literals, division, absolute_import, print_function
 
 import sys
 import os
 from datetime import datetime, timedelta
+from lxml import objectify
+
 from compatibility_utils import PY2
 
 from updatecheck import UpdateChecker
@@ -62,11 +65,29 @@ combobox_defaults = {
 prefs = {}
 BAIL_OUT = False
 
+def valid_attributes(tattr):
+    ''' This is not going to catch every, single way a user can screw this up, but
+    it's going to ensure that they can't enter an attribute string that's going to:
+    a) hang the attribute parser
+    b) make the xhmtl invalid '''
+
+    # Make a fake xml string and try to parse the attributes of the "stuff" element
+    # with lxml's objectify.
+    template ='''<root><stuff %s>dummy</stuff></root>''' % tattr
+    try:
+        root = objectify.fromstring(template)
+        dummy = root.stuff.attrib
+    except:
+        return False
+    return True
+
 class guiMain(tkinter.Frame):
     def __init__(self, parent, bk):
         tkinter.Frame.__init__(self, parent, border=5)
         self.parent = parent
+        # Edit Plugin container object
         self.bk = bk
+        # Handy prefs groupings
         self.gui_prefs = prefs['gui_selections']
         self.misc_prefs = prefs['miscellaneous_settings']
         self.update_prefs = prefs['update_settings']
@@ -94,6 +115,8 @@ class guiMain(tkinter.Frame):
         self.parent.title(self.bk._w.plugin_name)
         self.NO_ATTRIB_STR = 'No attributes ("naked" tag)'
         self.NO_CHANGE_STR = 'No change'
+        # Create context menu for plugin customization and bind it
+        # to the right-click/third-button mouse event
         self.context_menu = tkinter.Menu(self, tearoff=0, takefocus=0)
         self.context_menu.add_command(label='Customize Plugin', command=self.showConfig)
         self.parent.bind('<Button-3><ButtonRelease-3>', self.showMenu)
@@ -101,6 +124,7 @@ class guiMain(tkinter.Frame):
         body = tkinter.Frame(self)
         body.pack(fill=tkinter_constants.BOTH)
 
+        # Action type combobox -- Modify/Delete
         actionFrame = tkinter.Frame(body, pady=3)
         label = tkinter.Label(actionFrame, text='Action type:')
         label.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.Y)
@@ -113,6 +137,7 @@ class guiMain(tkinter.Frame):
         self.action_combo.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
         actionFrame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
+        # Tag name selection combobox -- hard-coded
         targetTagFrame = tkinter.Frame(body, pady=3)
         label = tkinter.Label(targetTagFrame, text='Tag name:')
         label.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.Y)
@@ -125,6 +150,7 @@ class guiMain(tkinter.Frame):
         self.tag_combo.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
         targetTagFrame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
+        # Attribute name combobox -- variable, based on prefs/defaults
         attrsFrame = tkinter.Frame(body, pady=3)
         label = tkinter.Label(attrsFrame, text='Having the attribute:')
         label.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.Y)
@@ -137,6 +163,7 @@ class guiMain(tkinter.Frame):
         self.attrs_combo.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
         attrsFrame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
+        # Value text-entry for the attribute selected in the Attribute combobox
         valueFrame = tkinter.Frame(body, pady=3)
         label = tkinter.Label(valueFrame, text='Whose value is (no quotes):')
         label.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.Y)
@@ -154,6 +181,7 @@ class guiMain(tkinter.Frame):
             self.attrvalue_entry.config(state='disabled')
             self.regex_checkbox.config(state='disabled')
 
+        # New tag combobox -- changes based on the first Tag combobox
         newtagFrame = tkinter.Frame(body, pady=3)
         label = tkinter.Label(newtagFrame, text='Change tag to:')
         label.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.Y)
@@ -166,6 +194,7 @@ class guiMain(tkinter.Frame):
         if self.action_combo_value.get() == 'Delete':
             self.newtag_combo.config(state='disabled')
 
+        # Attributes text entry -- used to replace the existing attributes with ones the user provides
         attrStrFrame = tkinter.Frame(body, bd=2, pady=3, relief=tkinter_constants.GROOVE)
         label = tkinter.Label(attrStrFrame, text='New attribute string (all attributes):')
         label.pack(anchor=tkinter_constants.NW, fill=tkinter_constants.Y)
@@ -173,6 +202,7 @@ class guiMain(tkinter.Frame):
         self.attrStr_entry = tkinter.Entry(attrStrFrame, textvariable=self.attrStr_entry_value)
         ToolTip(self.attrStr_entry, msg='What (if anything) do you want the resulting attributes to be (empty means none)?', delay=.4, follow=False)
         self.attrStr_entry.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.X, expand=True)
+        # Copy existing attributes checkbox
         self.copy_attrs = tkinter.IntVar()
         self.copy_attrs_checkbox = tkinter.Checkbutton(attrStrFrame,
                     text="Copy existing", command=self.copy_existing_chkbox_actions, variable=self.copy_attrs, onvalue=1, offvalue=0)
@@ -183,6 +213,7 @@ class guiMain(tkinter.Frame):
             self.attrStr_entry.config(state='disabled')
             self.copy_attrs_checkbox.config(state='disabled')
 
+        # Results textbox/scrollbar
         results_frame = tkinter.Frame(body, bd=2, pady=3)
         results_label = tkinter.Label(results_frame, text='Results:')
         results_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
@@ -192,6 +223,7 @@ class guiMain(tkinter.Frame):
         scrollbar.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
         results_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
+        # Dialog button box
         buttons = tkinter.Frame()
         self.gbutton = tkinter.Button(buttons, text='Process', command=self.cmdDo)
         ToolTip(self.gbutton, msg='Process the selected (x)html files in Book View with you choices.', delay=.4, follow=False)
@@ -207,23 +239,30 @@ class guiMain(tkinter.Frame):
 
         self.results.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH, expand=True)
 
+        # Get the saved window geometry settings
         self.parent.geometry(self.misc_prefs['windowGeometry'])
 
+        # Pop the update message if newer plugin version is avialable
         if self.update:
             self.update_msgbox()
 
     def showMenu(self, e):
+        '''show the customization context menu when right-clicking'''
         self.context_menu.post(e.x_root, e.y_root)
 
     def cmdBailOut(self):
+        '''set the global bail out variable to true and quit'''
         global BAIL_OUT
         BAIL_OUT = True
         self.quitApp()
 
     def cmdDo(self):
-        '''The main event'''
-        # Gather the parameters to give to the parser (in the criteria dictionary)
-        ''' The criteria parameter dictionary specs
+        '''The main event
+
+        Gather the parameters to give to the parser (in the criteria dictionary)
+
+        The criteria parameter dictionary specs:
+
         criteria['html']              Param 1 - the contents of the (x)html file: unicode text.
         criteria['action']            Param 2 - action to take: unicode text ('modify' or 'delete')
         criteria['tag']               Param 3 - tag to alter/delete: unicode text
@@ -271,10 +310,16 @@ class guiMain(tkinter.Frame):
             msg = 'What--exactly--would that achieve?'
             return tkinter_msgbox.showerror(title, msg)
 
-        # Param 8 - new attributes to be written (this is very fragile)
-        self.criteria['new_str'] = self.attrStr_entry_value.get().replace("'", '"')
-        if not len(self.criteria['new_str']):
-            self.criteria['new_str'] = ''
+        tattr = self.attrStr_entry_value.get()  # .replace("'", '"')
+        if not len(tattr):
+            tattr = ''
+        # Error checking: Use lxml's objectify to quickly test the new attribute string for syntax.
+        if not valid_attributes(tattr):
+            title = 'Error'
+            msg = 'There\'s an issue with your replacement attributes. Please check your syntax.'
+            return tkinter_msgbox.showerror(title, msg)
+        # Param 8 - new attributes to be written.
+        self.criteria['new_str'] = tattr
 
         # Param 9 - copy the existing attributes verbatim?
         self.criteria['copy'] = False
@@ -310,7 +355,7 @@ class guiMain(tkinter.Frame):
                 self.showCmdOutput('Error parsing %s! File skipped.\n' % href, 'error')
                 continue
 
-            # Report whetheror not changes were made (and how many)
+            # Report whether or not changes were made (and how many)
             totals += occurrences
             if occurrences:
                 # write changed markup back to file
@@ -390,6 +435,7 @@ class guiMain(tkinter.Frame):
         self.newtag_combo.current(0)
 
     def update_attrs_combo(self):
+        '''refesh the attributes combobox'''
         self.attrs_combo['values'] = self.combobox_values['attrs'] + [self.NO_ATTRIB_STR]
         self.attrs_combo.current(0)
 

@@ -97,6 +97,7 @@ class UpdateChecker():
         return False, _online_version, str(datetime.now())
 
 def main():
+    '''Used to test outside of Sigil'''
     class w():
         def __init__(self):
             w.plugin_name = 'TagMechanic'
