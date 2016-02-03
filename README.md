@@ -8,7 +8,6 @@ Links
 =====
 
 * Sigil website is at http://sigil-ebook.com
-* The Tooltip for Tkinter script can be found at http://code.activestate.com/recipes/576688-tooltip-for-tkinter/
 
 
 Building
@@ -18,7 +17,7 @@ First, clone the repo and cd into it:
 
     $ git clone https://github.com/dougmassay/tagmechanic-sigil-plugin.git
     $ cd ./tagmechanic-sigil-plugin
-    $ cd ..
+
 
 To create the plugin zip file, run the buildplugin.py script (root of the repository tree) with Python (2 or 3)
 
@@ -61,9 +60,5 @@ License Information
 ###TagMechanic (a Sigil plugin)
 
     Licensed under the GPLv3.
-    
-###Tooltip for Tkinter
-    
-    Created by Tucker Beck
-    Licensed under the MIT license
+
 
