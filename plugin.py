@@ -13,7 +13,7 @@ from compatibility_utils import PY2
 
 from updatecheck import UpdateChecker
 from parsing_engine import MarkupParser
-from tk_tooltips import ToolTip
+# from tk_tooltips import CreateToolTip
 from dialogs import guiConfig
 
 if PY2:
@@ -43,7 +43,7 @@ miscellaneous_settings = {
 }
 
 update_settings = {
-    'last_time_checked'   : str(datetime.now() - timedelta(hours=7)),
+    'last_time_checked'   : str(datetime.now() - timedelta(hours=13)),
     'last_online_version' : '0.0.0',
 }
 
@@ -61,6 +61,10 @@ combobox_defaults = {
     'block_changes'  : ['div'],
     'attrs'          : ['class', 'id', 'style', 'href'],
 }
+
+CONTEXT_BINDINGS = '<Button-3><ButtonRelease-3>'
+if sys.platform.startswith('darwin'):
+    CONTEXT_BINDINGS = '<Button-2><ButtonRelease-2>'
 
 prefs = {}
 BAIL_OUT = False
@@ -98,7 +102,6 @@ class guiMain(tkinter.Frame):
 
         if self.misc_prefs['windowGeometry'] is None:
             # Sane geometry defaults
-            # Limit the windowflash to the first time run
             self.parent.update_idletasks()
             w = self.parent.winfo_screenwidth()
             h = self.parent.winfo_screenheight()
@@ -119,7 +122,7 @@ class guiMain(tkinter.Frame):
         # to the right-click/third-button mouse event
         self.context_menu = tkinter.Menu(self, tearoff=0, takefocus=0)
         self.context_menu.add_command(label='Customize Plugin', command=self.showConfig)
-        self.parent.bind('<Button-3><ButtonRelease-3>', self.showMenu)
+        self.parent.bind(CONTEXT_BINDINGS, self.showMenu)
 
         body = tkinter.Frame(self)
         body.pack(fill=tkinter_constants.BOTH)
@@ -133,7 +136,7 @@ class guiMain(tkinter.Frame):
         self.action_combo['values'] = ('Modify', 'Delete')
         self.action_combo.current(self.gui_prefs['action'])
         self.action_combo.bind('<<ComboboxSelected>>', self.action_change_actions)
-        ToolTip(self.action_combo, msg='Modify a tag or delete it entirely?', delay=.4, follow=False)
+        # CreateToolTip(self.action_combo, 'Modify a tag or delete it entirely?')
         self.action_combo.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
         actionFrame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
@@ -146,7 +149,7 @@ class guiMain(tkinter.Frame):
         self.tag_combo['values'] = ('span', 'div', 'i', 'em', 'b', 'strong', 'u', 'small', 'a', 'section', 'blockquote')
         self.tag_combo.current(self.gui_prefs['tag'])
         self.tag_combo.bind('<<ComboboxSelected>>', self.tag_change_actions)
-        ToolTip(self.tag_combo, msg='Which (x)html element do you wish to work with?', delay=.4, follow=False)
+        # CreateToolTip(self.tag_combo, 'Which (x)html element do you wish to work with?')
         self.tag_combo.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
         targetTagFrame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
@@ -159,7 +162,7 @@ class guiMain(tkinter.Frame):
         self.update_attrs_combo()
         self.attrs_combo.current(self.gui_prefs['attrs'])
         self.attrs_combo.bind('<<ComboboxSelected>>', self.attribute_change_actions)
-        ToolTip(self.attrs_combo, msg='Which attribute do you want to use to narrow the results?', delay=.4, follow=False)
+        # CreateToolTip(self.attrs_combo, 'Which attribute do you want to use to narrow the results?')
         self.attrs_combo.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
         attrsFrame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
@@ -170,12 +173,12 @@ class guiMain(tkinter.Frame):
         self.attrvalue_entry_value = tkinter.StringVar()
         self.attrvalue_entry = tkinter.Entry(valueFrame, textvariable=self.attrvalue_entry_value)
         self.attrvalue_entry.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.X, expand=True)
-        ToolTip(self.attrvalue_entry, msg='What value for the selected attribute should be used to narrow the results even more?', delay=.4, follow=False)
+        # CreateToolTip(self.attrvalue_entry, 'What value for the selected attribute should be used to narrow the results even more?')
         self.srch_type = tkinter.StringVar()
         self.regex_checkbox = tkinter.Checkbutton(valueFrame, text="Regex", variable=self.srch_type, onvalue='regex', offvalue='normal')
         self.regex_checkbox.deselect()
         self.regex_checkbox.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
-        ToolTip(self.regex_checkbox, msg='Is your attribute value a literal string or a regular expression?', delay=.4, follow=False)
+        # CreateToolTip(self.regex_checkbox, 'Is your attribute value a literal string or a regular expression?')
         valueFrame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
         if self.attrs_combo_value.get() == self.NO_ATTRIB_STR:
             self.attrvalue_entry.config(state='disabled')
@@ -188,7 +191,7 @@ class guiMain(tkinter.Frame):
         self.newtag_combo_value = tkinter.StringVar()
         self.newtag_combo = tkinter_ttk.Combobox(newtagFrame, width=22, textvariable=self.newtag_combo_value)
         self.tag_change_actions(None)
-        ToolTip(self.newtag_combo, msg='Do you want to change the tag to a new element or keep it the same?', delay=.4, follow=False)
+        # CreateToolTip(self.newtag_combo, 'Do you want to change the tag to a new element or keep it the same?')
         self.newtag_combo.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
         newtagFrame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
         if self.action_combo_value.get() == 'Delete':
@@ -200,13 +203,13 @@ class guiMain(tkinter.Frame):
         label.pack(anchor=tkinter_constants.NW, fill=tkinter_constants.Y)
         self.attrStr_entry_value = tkinter.StringVar()
         self.attrStr_entry = tkinter.Entry(attrStrFrame, textvariable=self.attrStr_entry_value)
-        ToolTip(self.attrStr_entry, msg='What (if anything) do you want the resulting attributes to be (empty means none)?', delay=.4, follow=False)
+        # CreateToolTip(self.attrStr_entry, 'What (if anything) do you want the resulting attributes to be (empty means none)?')
         self.attrStr_entry.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.X, expand=True)
         # Copy existing attributes checkbox
         self.copy_attrs = tkinter.IntVar()
         self.copy_attrs_checkbox = tkinter.Checkbutton(attrStrFrame,
                     text="Copy existing", command=self.copy_existing_chkbox_actions, variable=self.copy_attrs, onvalue=1, offvalue=0)
-        ToolTip(self.copy_attrs_checkbox, msg='Copy the existing attibutes of the tag unchanged?', delay=.4, follow=False)
+        # CreateToolTip(self.copy_attrs_checkbox, 'Copy the existing attibutes of the tag unchanged?')
         self.copy_attrs_checkbox.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
         attrStrFrame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
         if self.action_combo_value.get() == 'Delete':
@@ -226,14 +229,14 @@ class guiMain(tkinter.Frame):
         # Dialog button box
         buttons = tkinter.Frame()
         self.gbutton = tkinter.Button(buttons, text='Process', command=self.cmdDo)
-        ToolTip(self.gbutton, msg='Process the selected (x)html files in Book View with you choices.', delay=.4, follow=False)
+        # CreateToolTip(self.gbutton, 'Process the selected (x)html files in Book View with your choices.')
         self.gbutton.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.BOTH, expand=True)
         self.bbutton = tkinter.Button(buttons, text='Abort Changes', command=self.cmdBailOut)
-        ToolTip(self.bbutton, msg='Abort all modifications and exit.', delay=.4, follow=False)
+        # CreateToolTip(self.bbutton, 'Abort all modifications and exit.')
         self.bbutton.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.BOTH, expand=True)
         self.bbutton.config(state='disabled')
         self.qbutton = tkinter.Button(buttons, text='Quit', command=self.quitApp)
-        ToolTip(self.qbutton, msg='Close this dialog.', delay=.4, follow=False)
+        # CreateToolTip(self.qbutton, 'Close this dialog.')
         self.qbutton.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.BOTH, expand=True)
         buttons.pack(side=tkinter_constants.BOTTOM, pady=5, fill=tkinter_constants.BOTH)
 
@@ -241,6 +244,8 @@ class guiMain(tkinter.Frame):
 
         # Get the saved window geometry settings
         self.parent.geometry(self.misc_prefs['windowGeometry'])
+        self.parent.deiconify()
+        self.parent.lift()
 
         # Pop the update message if newer plugin version is avialable
         if self.update:
@@ -525,6 +530,7 @@ def run(bk):
     prefs.defaults['combobox_values'] = combobox_defaults
 
     root = tkinter.Tk()
+    root.withdraw()
     root.title('')
     root.resizable(True, True)
     root.minsize(420, 325)

@@ -17,6 +17,19 @@ else:
     import tkinter.constants as tkinter_constants
     text_type = str
 
+def remove_dupes(values):
+    '''Could just use set(), but some combobox values are preloaded
+       from prefs using an index. So order matters'''
+    output = []
+    seen = set()
+    for value in values:
+        # If value has not been encountered yet,
+        # ... add it to both list and set.
+        if value not in seen:
+            output.append(value)
+            seen.add(value)
+    return output
+
 class guiConfig(tkinter.Toplevel):
     def __init__(self, parent, defaults):
         tkinter.Toplevel.__init__(self, parent, border=5)
@@ -162,7 +175,7 @@ class guiConfig(tkinter.Toplevel):
         h = self.winfo_reqheight()
         x = self.winfo_screenwidth() // 2 - w // 2
         y = self.winfo_screenheight() // 2 - h // 2
-        self.geometry('{}x{}+{}+{}'.format(w, h, x, y))
+        self.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
     def populate(self, values):
         '''Populate the text entry boxes'''
@@ -206,40 +219,40 @@ class guiConfig(tkinter.Toplevel):
     def cmdDo(self):
         '''Grab any changes and store them'''
         tmp_list = self.span_value.get().strip(' ').split(',')
-        self.temp_values['span_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['span_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.div_value.get().strip(' ').split(',')
-        self.temp_values['div_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['div_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.i_value.get().strip(' ').split(',')
-        self.temp_values['i_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['i_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.em_value.get().strip(' ').split(',')
-        self.temp_values['em_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['em_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.b_value.get().strip(' ').split(',')
-        self.temp_values['b_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['b_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.strong_value.get().strip(' ').split(',')
-        self.temp_values['strong_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['strong_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.u_value.get().strip(' ').split(',')
-        self.temp_values['u_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['u_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.a_value.get().strip(' ').split(',')
-        self.temp_values['a_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['a_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.small_value.get().strip(' ').split(',')
-        self.temp_values['small_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['small_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.section_value.get().strip(' ').split(',')
-        self.temp_values['sec_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['sec_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.blockquote_value.get().strip(' ').split(',')
-        self.temp_values['block_changes'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['block_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.attrs_value.get().strip(' ').split(',')
-        self.temp_values['attrs'] = [x.strip(' ') for x in tmp_list if x]
+        self.temp_values['attrs'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         # Copy the temp settings back to the main gui's value prefs
         self.maingui.combobox_values = self.temp_values
