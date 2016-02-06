@@ -511,6 +511,11 @@ class guiMain(tkinter.Frame):
 
 
 def run(bk):
+    # before Sigil 0.8.900 and plugin launcher 20150909, bk.selected_iter doesn't exist.
+    if bk.launcher_version() < 20150909:
+        print('Error: The %s plugin requires Sigil version 0.8.900 or higher.' % bk._w.plugin_name)
+        return -1
+
     # Fail if no Text files are selected in Sigil's Book Browser
     count = 0
     for (typ, ident) in bk.selected_iter():
