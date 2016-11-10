@@ -3,11 +3,13 @@ TagMechanic (A Sigil Plugin)
 
 A Sigil plugin that helps users manipulate/remove spans, divs and other elements based on their attributes (or lack thereof) in a nesting-safe manner.
 
+**NOTE: this plugin periodically checks for updated versions by connecting to this Github repository**
 
 Links
 =====
 
 * Sigil website is at http://sigil-ebook.com
+* The TagMechanic plugin support thread on MobileRead: <http://www.mobileread.com/forums/showthread.php?t=270639>
 
 
 Building
