@@ -23,10 +23,10 @@ First, clone the repo and cd into it:
 
 To create the plugin zip file, run the buildplugin.py script (root of the repository tree) with Python (2 or 3)
 
-    $python buildplugin.py
-    
+    $./buildplugin (so long as buildplugin's executable bit is set, otherwise ... $python ./buildplugin)
+
 This will create the TagMechanic_vX.X.X.zip file that can then be installed into Sigil's plugin manager.
-    
+
 Contributing / Modifying
 ============
 From here on out, a proficiency with developing / creating Sigil plugins is assumed.
@@ -44,10 +44,10 @@ The core plugin files (this is where most contributors will spend their time) ar
     > tk_tooltips.py
     > updatecheck.py
 
-    
+
 Files used for building/maintaining the plugin:
 
-    > buildplugin.py  -- this is used to build the plugin.
+    > buildplugin  -- this is used to build the plugin.
     > checkversion.xml -- used by automatic update checking (not yet implemented).
     > setup.cfg -- used for flake8 style and PEP checking. Use it to see if your code complies.
     (if my setup.cfg doesn't bark about it, then I don't care about it)

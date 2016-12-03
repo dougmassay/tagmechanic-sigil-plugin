@@ -64,6 +64,14 @@ class guiConfig(tkinter.Toplevel):
         self.div_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
         div_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
+        p_frame = tkinter.Frame(body, pady=3)
+        p_label = tkinter.Label(p_frame, text='Choices to change "p" elements to:')
+        p_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
+        self.p_value = tkinter.StringVar()
+        self.p_value_entry = tkinter.Entry(p_frame, textvariable=self.p_value)
+        self.p_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
+        p_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
+
         i_frame = tkinter.Frame(body, pady=3)
         i_label = tkinter.Label(i_frame, text='Choices to change "i" elements to:')
         i_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
@@ -183,6 +191,8 @@ class guiConfig(tkinter.Toplevel):
         self.span_value_entry.insert(0, ', '.join(values['span_changes']))
         self.div_value_entry.delete(0, tkinter_constants.END)
         self.div_value_entry.insert(0, ', '.join(values['div_changes']))
+        self.p_value_entry.delete(0, tkinter_constants.END)
+        self.p_value_entry.insert(0, ', '.join(values['p_changes']))
         self.i_value_entry.delete(0, tkinter_constants.END)
         self.i_value_entry.insert(0, ', '.join(values['i_changes']))
         self.em_value_entry.delete(0, tkinter_constants.END)
@@ -223,6 +233,9 @@ class guiConfig(tkinter.Toplevel):
 
         tmp_list = self.div_value.get().strip(' ').split(',')
         self.temp_values['div_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
+
+        tmp_list = self.p_value.get().strip(' ').split(',')
+        self.temp_values['p_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.i_value.get().strip(' ').split(',')
         self.temp_values['i_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
@@ -271,6 +284,7 @@ class guiConfig(tkinter.Toplevel):
 def main():
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

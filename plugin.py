@@ -50,6 +50,7 @@ update_settings = {
 combobox_defaults = {
     'span_changes'   : ['em', 'strong', 'i', 'b', 'small', 'u'],
     'div_changes'    : ['p', 'blockquote'],
+    'p_changes'      : ['div'],
     'i_changes'      : ['em', 'span'],
     'em_changes'     : ['i', 'span'],
     'b_changes'      : ['strong', 'span'],
@@ -68,6 +69,14 @@ if sys.platform.startswith('darwin'):
 
 prefs = {}
 BAIL_OUT = False
+
+def check_for_new_prefs(prefs_group, default_values):
+    ''' Make sure that adding new tags doesn't mean that the user has
+    to delete their preferences json and start all over. Piecemeal defaults
+    instead of the wholesale approach. '''
+    for key, value in default_values.items():
+        if key not in prefs_group:
+            prefs_group[key] = value
 
 def valid_attributes(tattr):
     ''' This is not going to catch every, single way a user can screw this up, but
@@ -146,7 +155,7 @@ class guiMain(tkinter.Frame):
         label.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.Y)
         self.tag_combo_value = tkinter.StringVar()
         self.tag_combo = tkinter_ttk.Combobox(targetTagFrame, width=22, textvariable=self.tag_combo_value)
-        self.tag_combo['values'] = ('span', 'div', 'i', 'em', 'b', 'strong', 'u', 'small', 'a', 'section', 'blockquote')
+        self.tag_combo['values'] = ('span', 'div', 'p', 'i', 'em', 'b', 'strong', 'u', 'small', 'a', 'section', 'blockquote')
         self.tag_combo.current(self.gui_prefs['tag'])
         self.tag_combo.bind('<<ComboboxSelected>>', self.tag_change_actions)
         # CreateToolTip(self.tag_combo, 'Which (x)html element do you wish to work with?')
@@ -419,6 +428,8 @@ class guiMain(tkinter.Frame):
             self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['span_changes']
         elif self.tag_combo_value.get() == 'div':
             self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['div_changes']
+        elif self.tag_combo_value.get() == 'p':
+            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['p_changes']
         elif self.tag_combo_value.get() == 'i':
             self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['i_changes']
         elif self.tag_combo_value.get() == 'em':
@@ -528,11 +539,22 @@ def run(bk):
     global prefs
     prefs = bk.getPrefs()
 
-    # Or use defaults if json doesn't yet exist
-    prefs.defaults['gui_selections'] = gui_selections
-    prefs.defaults['miscellaneous_settings'] = miscellaneous_settings
-    prefs.defaults['update_settings'] = update_settings
-    prefs.defaults['combobox_values'] = combobox_defaults
+    if 'gui_selections' not in prefs:  # If the json doesn't exist yet, assign wholesale defaults.
+        prefs['gui_selections'] = gui_selections
+    else:  # otherwise, use the piecemeal method in case new prefs have been added since json creation.
+        check_for_new_prefs(prefs['gui_selections'], gui_selections)
+    if 'miscellaneous_settings' not in prefs:
+        prefs['miscellaneous_settings']= miscellaneous_settings
+    else:
+        check_for_new_prefs(prefs['miscellaneous_settings'], miscellaneous_settings)
+    if 'update_settings' not in prefs:
+        prefs['update_settings'] = update_settings
+    else:
+        check_for_new_prefs(prefs['update_settings'], update_settings)
+    if 'combobox_values' not in prefs:
+        prefs['combobox_values'] = combobox_defaults
+    else:
+        check_for_new_prefs(prefs['combobox_values'], combobox_defaults)
 
     root = tkinter.Tk()
     root.withdraw()
@@ -548,13 +570,14 @@ def run(bk):
     # Save prefs to back to json
     bk.savePrefs(prefs)
     if BAIL_OUT:
-        print ('Changes aborted by user.\n')
+        print('Changes aborted by user.\n')
         return -1
     return 0
 
 def main():
-    print ('I reached main when I should not have\n')
+    print('I reached main when I should not have\n')
     return -1
+
 
 if __name__ == "__main__":
     sys.exit(main())

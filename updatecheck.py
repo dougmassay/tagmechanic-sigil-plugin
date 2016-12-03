@@ -112,5 +112,6 @@ def main():
     print(tuple_version('0.80.3') > tuple_version('0.80.1'))
     print(tuple_version('0.80.3') > tuple_version('0.80.30'))
 
+
 if __name__ == "__main__":
     sys.exit(main())
