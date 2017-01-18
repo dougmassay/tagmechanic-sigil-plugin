@@ -562,8 +562,9 @@ def run(bk):
     root.resizable(True, True)
     root.minsize(420, 325)
     root.option_add('*font', 'Arial -12')
-    img = tkinter.Image('photo', file=os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'images/icon.png'))
-    root.tk.call('wm','iconphoto',root._w,img)
+    if not sys.platform.startswith('darwin'):
+        img = tkinter.Image('photo', file=os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'images/icon.png'))
+        root.tk.call('wm','iconphoto',root._w,img)
     guiMain(root, bk).pack(fill=tkinter_constants.BOTH)
     root.mainloop()
 
