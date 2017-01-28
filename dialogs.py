@@ -59,11 +59,17 @@ class guiConfig(tkinter.Toplevel):
         num_cols = len(self.taglist)/col_limit
         num_cols = int(math.ceil(num_cols))
 
+        # If the column limit and the number of columns produces a single orphan
+        # text entry widget, reduce/increase the column limit accordingly.
+        if num_cols > 1 and (len(self.taglist) - ((num_cols - 1)*col_limit)) < 2:
+            if num_cols >= 3:
+                col_limit -= 1
+
         # Create an integer-indexed dictionary of frames representing the number of
         # columns necessary. Packed left to right in the parent frame.
         column = {}
         for i in range(1, num_cols+1):
-            column[i] = tkinter.Frame(columns_frame, padx=3)
+            column[i] = tkinter.Frame(columns_frame, bd=2, padx=3,  relief=tkinter_constants.GROOVE)
             column[i].pack(side=tkinter_constants.LEFT, fill=tkinter_constants.BOTH)
 
         # Create a dictionary of text entry widgets (indexed by tag name) and pack them
@@ -76,16 +82,20 @@ class guiConfig(tkinter.Toplevel):
                 curr_col += 1
                 curr_item = 1
             # Add label and text entry widget to current column.
-            lbl = tkinter.Label(column[curr_col], text='Choices to change "{}" elements to:'.format(tag))
+            entry_frame = tkinter.Frame(column[curr_col], pady=5)
+            lbl = tkinter.Label(entry_frame, text='Choices to change "{}" elements to:'.format(tag),
+                                font='Helvetica -12 bold')
             lbl.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
             self.tkinter_vars[tag] = tkinter.StringVar()
-            self.tkentry_widgets[tag] = tkinter.Entry(column[curr_col], textvariable=self.tkinter_vars[tag])
+            self.tkentry_widgets[tag] = tkinter.Entry(entry_frame, textvariable=self.tkinter_vars[tag])
             self.tkentry_widgets[tag].pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
+            entry_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
             curr_item += 1
 
         # Create the label/text-entry widget for the html attributes list
         attrs_frame = tkinter.Frame(body, pady=10)
-        attrs_label = tkinter.Label(attrs_frame, text='Attributes to search for in html elements:')
+        attrs_label = tkinter.Label(attrs_frame, text='HTML attributes available to search for:',
+                                    font='Helvetica -12 bold')
         attrs_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
         self.attrs_value = tkinter.StringVar()
         self.attrs_value_entry = tkinter.Entry(attrs_frame, textvariable=self.attrs_value)
