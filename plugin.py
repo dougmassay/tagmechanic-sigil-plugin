@@ -47,20 +47,28 @@ update_settings = {
     'last_online_version' : '0.0.0',
 }
 
+# To add a new tag, add it to taglist and add a list of tags it can be changed to to combobox_defaults
+taglist = ['span', 'div', 'p', 'i', 'em', 'b', 'strong', 'u', 'small', 'a', 'blockquote',
+           'header', 'section', 'footer', 'nav', 'article']
+
 combobox_defaults = {
-    'span_changes'   : ['em', 'strong', 'i', 'b', 'small', 'u'],
-    'div_changes'    : ['p', 'blockquote'],
-    'p_changes'      : ['div'],
-    'i_changes'      : ['em', 'span'],
-    'em_changes'     : ['i', 'span'],
-    'b_changes'      : ['strong', 'span'],
-    'strong_changes' : ['b', 'span'],
-    'u_changes'      : ['span'],
-    'a_changes'      : [],
-    'small_changes'  : ['span'],
-    'sec_changes'    : ['div'],
-    'block_changes'  : ['div'],
-    'attrs'          : ['class', 'id', 'style', 'href'],
+    'span_changes'        : ['em', 'strong', 'i', 'b', 'small', 'u'],
+    'div_changes'         : ['p', 'blockquote'],
+    'p_changes'           : ['div'],
+    'i_changes'           : ['em', 'span'],
+    'em_changes'          : ['i', 'span'],
+    'b_changes'           : ['strong', 'span'],
+    'strong_changes'      : ['b', 'span'],
+    'u_changes'           : ['span'],
+    'small_changes'       : ['span'],
+    'a_changes'           : [],
+    'blockquote_changes'  : ['div'],
+    'header_changes'      : ['div'],
+    'section_changes'     : ['div'],
+    'footer_changes'      : ['div'],
+    'nav_changes'         : ['div'],
+    'article_changes'     : ['div'],
+    'attrs'               : ['class', 'id', 'style', 'href'],
 }
 
 CONTEXT_BINDINGS = '<Button-3><ButtonRelease-3>'
@@ -70,6 +78,16 @@ if sys.platform.startswith('darwin'):
 prefs = {}
 BAIL_OUT = False
 
+
+# Some keys were renamed along the way. Convert users existing prefs to new ones.
+def fix_old_keys(combo_values):
+    if 'sec_changes' in combo_values:
+        combo_values['section_changes'] = combo_values.pop('sec_changes')
+    if 'block_changes' in combo_values:
+        combo_values['blockquote_changes'] = combo_values.pop('block_changes')
+    return combo_values
+
+
 def check_for_new_prefs(prefs_group, default_values):
     ''' Make sure that adding new tags doesn't mean that the user has
     to delete their preferences json and start all over. Piecemeal defaults
@@ -77,6 +95,7 @@ def check_for_new_prefs(prefs_group, default_values):
     for key, value in default_values.items():
         if key not in prefs_group:
             prefs_group[key] = value
+
 
 def valid_attributes(tattr):
     ''' This is not going to catch every, single way a user can screw this up, but
@@ -94,10 +113,12 @@ def valid_attributes(tattr):
         return False
     return True
 
+
 class guiMain(tkinter.Frame):
     def __init__(self, parent, bk):
         tkinter.Frame.__init__(self, parent, border=5)
         self.parent = parent
+        self.taglist = taglist
         # Edit Plugin container object
         self.bk = bk
         # Handy prefs groupings
@@ -149,14 +170,17 @@ class guiMain(tkinter.Frame):
         self.action_combo.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
         actionFrame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
-        # Tag name selection combobox -- hard-coded
+        # Tag name selection combobox -- from taglist
         targetTagFrame = tkinter.Frame(body, pady=3)
         label = tkinter.Label(targetTagFrame, text='Tag name:')
         label.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.Y)
         self.tag_combo_value = tkinter.StringVar()
         self.tag_combo = tkinter_ttk.Combobox(targetTagFrame, width=22, textvariable=self.tag_combo_value)
-        self.tag_combo['values'] = ('span', 'div', 'p', 'i', 'em', 'b', 'strong', 'u', 'small', 'a', 'section', 'blockquote')
-        self.tag_combo.current(self.gui_prefs['tag'])
+        self.tag_combo['values'] = tuple(self.taglist)
+        try:
+            self.tag_combo.current(self.gui_prefs['tag'])
+        except:
+            self.tag_combo.current(0)
         self.tag_combo.bind('<<ComboboxSelected>>', self.tag_change_actions)
         # CreateToolTip(self.tag_combo, 'Which (x)html element do you wish to work with?')
         self.tag_combo.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
@@ -169,7 +193,10 @@ class guiMain(tkinter.Frame):
         self.attrs_combo_value = tkinter.StringVar()
         self.attrs_combo = tkinter_ttk.Combobox(attrsFrame, width=22, textvariable=self.attrs_combo_value)
         self.update_attrs_combo()
-        self.attrs_combo.current(self.gui_prefs['attrs'])
+        try:
+            self.attrs_combo.current(self.gui_prefs['attrs'])
+        except:
+            self.attrs_combo.current(0)
         self.attrs_combo.bind('<<ComboboxSelected>>', self.attribute_change_actions)
         # CreateToolTip(self.attrs_combo, 'Which attribute do you want to use to narrow the results?')
         self.attrs_combo.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.Y)
@@ -246,7 +273,7 @@ class guiMain(tkinter.Frame):
         self.bbutton.config(state='disabled')
         self.qbutton = tkinter.Button(buttons, text='Quit', command=self.quitApp)
         # CreateToolTip(self.qbutton, 'Close this dialog.')
-        self.qbutton.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.BOTH, expand=True)
+        self.qbutton.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.BOTH, expand=True)
         buttons.pack(side=tkinter_constants.BOTTOM, pady=5, fill=tkinter_constants.BOTH)
 
         self.results.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH, expand=True)
@@ -424,30 +451,7 @@ class guiMain(tkinter.Frame):
     def tag_change_actions(self, event):
         '''Actions to be taken when the "Tag" combobox is changed'''
         # (populates the New Tag combobox with suitable choices)
-        if self.tag_combo_value.get() == 'span':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['span_changes']
-        elif self.tag_combo_value.get() == 'div':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['div_changes']
-        elif self.tag_combo_value.get() == 'p':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['p_changes']
-        elif self.tag_combo_value.get() == 'i':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['i_changes']
-        elif self.tag_combo_value.get() == 'em':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['em_changes']
-        elif self.tag_combo_value.get() == 'b':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['b_changes']
-        elif self.tag_combo_value.get() == 'strong':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['strong_changes']
-        elif self.tag_combo_value.get() == 'u':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['u_changes']
-        elif self.tag_combo_value.get() == 'small':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['small_changes']
-        elif self.tag_combo_value.get() == 'a':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['a_changes']
-        elif self.tag_combo_value.get() == 'section':
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['sec_changes']
-        else:
-            self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['block_changes']
+        self.newtag_combo['values'] = [self.NO_CHANGE_STR] + self.combobox_values['{}_changes'.format(self.tag_combo_value.get())]
         self.newtag_combo.current(0)
 
     def update_attrs_combo(self):
@@ -554,7 +558,7 @@ def run(bk):
     if 'combobox_values' not in prefs:
         prefs['combobox_values'] = combobox_defaults
     else:
-        check_for_new_prefs(prefs['combobox_values'], combobox_defaults)
+        check_for_new_prefs(fix_old_keys(prefs['combobox_values']), combobox_defaults)
 
     root = tkinter.Tk()
     root.withdraw()
@@ -574,6 +578,7 @@ def run(bk):
         print('Changes aborted by user.\n')
         return -1
     return 0
+
 
 def main():
     print('I reached main when I should not have\n')

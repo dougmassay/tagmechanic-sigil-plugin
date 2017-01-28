@@ -5,17 +5,18 @@
 from __future__ import unicode_literals, division, absolute_import, print_function
 
 import sys
+import math
 from compatibility_utils import PY2
 
 
 if PY2:
     import Tkinter as tkinter
     import Tkconstants as tkinter_constants
-    text_type = unicode
+    range = xrange
 else:
     import tkinter
     import tkinter.constants as tkinter_constants
-    text_type = str
+
 
 def remove_dupes(values):
     '''Could just use set(), but some combobox values are preloaded
@@ -36,9 +37,12 @@ class guiConfig(tkinter.Toplevel):
         self.resizable(False, False)
         self.title('Plugin Customization')
         self.maingui = parent
-        # Copy combox values and their original defaults from main plugin.py
+        # Copy taglist, combox values and their original defaults from main plugin.py
+        self.taglist = self.maingui.taglist
         self.temp_values = self.maingui.combobox_values
         self.defaults = defaults
+        self.tkinter_vars = {}
+        self.tkentry_widgets = {}
 
         self.initUI()
 
@@ -46,106 +50,41 @@ class guiConfig(tkinter.Toplevel):
         ''' Build the GUI and assign variables and handler functions to elements. '''
         body = tkinter.Frame(self)
         body.pack(fill=tkinter_constants.BOTH)
+        columns_frame = tkinter.Frame(body)
+        columns_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
 
-        # All simple text entry widgets and their labels
-        span_frame = tkinter.Frame(body, pady=3)
-        span_label = tkinter.Label(span_frame, text='Choices to change "span" elements to:')
-        span_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.span_value = tkinter.StringVar()
-        self.span_value_entry = tkinter.Entry(span_frame, textvariable=self.span_value)
-        self.span_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        span_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
+        # How many columns of nine items each will it take to display
+        # a text box for each tag in taglist?
+        col_limit = 9
+        num_cols = len(self.taglist)/col_limit
+        num_cols = int(math.ceil(num_cols))
 
-        div_frame = tkinter.Frame(body, pady=3)
-        div_label = tkinter.Label(div_frame, text='Choices to change "div" elements to:')
-        div_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.div_value = tkinter.StringVar()
-        self.div_value_entry = tkinter.Entry(div_frame, textvariable=self.div_value)
-        self.div_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        div_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
+        # Create an integer-indexed dictionary of frames representing the number of
+        # columns necessary. Packed left to right in the parent frame.
+        column = {}
+        for i in range(1, num_cols+1):
+            column[i] = tkinter.Frame(columns_frame, padx=3)
+            column[i].pack(side=tkinter_constants.LEFT, fill=tkinter_constants.BOTH)
 
-        p_frame = tkinter.Frame(body, pady=3)
-        p_label = tkinter.Label(p_frame, text='Choices to change "p" elements to:')
-        p_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.p_value = tkinter.StringVar()
-        self.p_value_entry = tkinter.Entry(p_frame, textvariable=self.p_value)
-        self.p_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        p_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
+        # Create a dictionary of text entry widgets (indexed by tag name) and pack them
+        # (top to bottom) and their labels in as many columns as it takes.
+        curr_col = 1
+        curr_item = 1
+        for tag in self.taglist:
+            # Column item limit surpassed - switch to next column.
+            if curr_item > col_limit:
+                curr_col += 1
+                curr_item = 1
+            # Add label and text entry widget to current column.
+            lbl = tkinter.Label(column[curr_col], text='Choices to change "{}" elements to:'.format(tag))
+            lbl.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
+            self.tkinter_vars[tag] = tkinter.StringVar()
+            self.tkentry_widgets[tag] = tkinter.Entry(column[curr_col], textvariable=self.tkinter_vars[tag])
+            self.tkentry_widgets[tag].pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
+            curr_item += 1
 
-        i_frame = tkinter.Frame(body, pady=3)
-        i_label = tkinter.Label(i_frame, text='Choices to change "i" elements to:')
-        i_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.i_value = tkinter.StringVar()
-        self.i_value_entry = tkinter.Entry(i_frame, textvariable=self.i_value)
-        self.i_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        i_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
-
-        em_frame = tkinter.Frame(body, pady=3)
-        em_label = tkinter.Label(em_frame, text='Choices to change "em" elements to:')
-        em_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.em_value = tkinter.StringVar()
-        self.em_value_entry = tkinter.Entry(em_frame, textvariable=self.em_value)
-        self.em_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        em_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
-
-        b_frame = tkinter.Frame(body, pady=3)
-        b_label = tkinter.Label(b_frame, text='Choices to change "b" elements to:')
-        b_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.b_value = tkinter.StringVar()
-        self.b_value_entry = tkinter.Entry(b_frame, textvariable=self.b_value)
-        self.b_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        b_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
-
-        strong_frame = tkinter.Frame(body, pady=3)
-        strong_label = tkinter.Label(strong_frame, text='Choices to change "strong" elements to:')
-        strong_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.strong_value = tkinter.StringVar()
-        self.strong_value_entry = tkinter.Entry(strong_frame, textvariable=self.strong_value)
-        self.strong_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        strong_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
-
-        u_frame = tkinter.Frame(body, pady=3)
-        u_label = tkinter.Label(u_frame, text='Choices to change "u" elements to:')
-        u_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.u_value = tkinter.StringVar()
-        self.u_value_entry = tkinter.Entry(u_frame, textvariable=self.u_value)
-        self.u_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        u_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
-
-        a_frame = tkinter.Frame(body, pady=3)
-        a_label = tkinter.Label(a_frame, text='Choices to change "a" elements to:')
-        a_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.a_value = tkinter.StringVar()
-        self.a_value_entry = tkinter.Entry(a_frame, textvariable=self.a_value)
-        self.a_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        a_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
-        self.a_value_entry.config(state='disabled')
-
-        small_frame = tkinter.Frame(body, pady=3)
-        small_label = tkinter.Label(small_frame, text='Choices to change "small" elements to:')
-        small_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.small_value = tkinter.StringVar()
-        self.small_value_entry = tkinter.Entry(small_frame, textvariable=self.small_value)
-        self.small_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        small_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
-
-        section_frame = tkinter.Frame(body, pady=3)
-        section_label = tkinter.Label(section_frame, text='Choices to change "section" elements to:')
-        section_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.section_value = tkinter.StringVar()
-        self.section_value_entry = tkinter.Entry(section_frame, textvariable=self.section_value)
-        self.section_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        section_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
-
-        blockquote_frame = tkinter.Frame(body, pady=3)
-        blockquote_label = tkinter.Label(blockquote_frame, text='Choices to change "blockquote" elements to:')
-        blockquote_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
-        self.blockquote_value = tkinter.StringVar()
-        self.blockquote_value_entry = tkinter.Entry(blockquote_frame, textvariable=self.blockquote_value)
-        self.blockquote_value_entry.pack(side=tkinter_constants.BOTTOM, fill=tkinter_constants.X)
-        blockquote_frame.pack(side=tkinter_constants.TOP, fill=tkinter_constants.BOTH)
-
-        attrs_frame = tkinter.Frame(body, pady=3)
+        # Create the label/text-entry widget for the html attributes list
+        attrs_frame = tkinter.Frame(body, pady=10)
         attrs_label = tkinter.Label(attrs_frame, text='Attributes to search for in html elements:')
         attrs_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
         self.attrs_value = tkinter.StringVar()
@@ -160,7 +99,7 @@ class guiConfig(tkinter.Toplevel):
         self.qbutton = tkinter.Button(buttons, text='Cancel', command=self.cmdCancel)
         self.qbutton.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.BOTH, expand=True)
         self.dbutton = tkinter.Button(buttons, text='Reset Defaults', command=self.cmdDefaults)
-        self.dbutton.pack(side=tkinter_constants.RIGHT, fill=tkinter_constants.BOTH, expand=False)
+        self.dbutton.pack(side=tkinter_constants.LEFT, fill=tkinter_constants.BOTH, expand=True)
         buttons.pack(side=tkinter_constants.BOTTOM, pady=5, fill=tkinter_constants.BOTH)
 
         # Call the method that populates the textboxes
@@ -187,34 +126,13 @@ class guiConfig(tkinter.Toplevel):
 
     def populate(self, values):
         '''Populate the text entry boxes'''
-        self.span_value_entry.delete(0, tkinter_constants.END)
-        self.span_value_entry.insert(0, ', '.join(values['span_changes']))
-        self.div_value_entry.delete(0, tkinter_constants.END)
-        self.div_value_entry.insert(0, ', '.join(values['div_changes']))
-        self.p_value_entry.delete(0, tkinter_constants.END)
-        self.p_value_entry.insert(0, ', '.join(values['p_changes']))
-        self.i_value_entry.delete(0, tkinter_constants.END)
-        self.i_value_entry.insert(0, ', '.join(values['i_changes']))
-        self.em_value_entry.delete(0, tkinter_constants.END)
-        self.em_value_entry.insert(0, ', '.join(values['em_changes']))
-        self.b_value_entry.delete(0, tkinter_constants.END)
-        self.b_value_entry.insert(0, ', '.join(values['b_changes']))
-        self.strong_value_entry.delete(0, tkinter_constants.END)
-        self.strong_value_entry.insert(0, ', '.join(values['strong_changes']))
-        self.u_value_entry.delete(0, tkinter_constants.END)
-        self.u_value_entry.insert(0, ', '.join(values['u_changes']))
+        for tag in self.taglist:
+            self.tkentry_widgets[tag].config(state='normal')
+            self.tkentry_widgets[tag].delete(0, tkinter_constants.END)
+            self.tkentry_widgets[tag].insert(0, ', '.join(values['{}_changes'.format(tag)]))
+            if not len(values['{}_changes'.format(tag)]):
+                self.tkentry_widgets[tag].config(state='disabled')
 
-        self.a_value_entry.config(state='normal')
-        self.a_value_entry.delete(0, tkinter_constants.END)
-        self.a_value_entry.insert(0, ', '.join(values['a_changes']))
-        self.a_value_entry.config(state='disabled')
-
-        self.small_value_entry.delete(0, tkinter_constants.END)
-        self.small_value_entry.insert(0, ', '.join(values['small_changes']))
-        self.section_value_entry.delete(0, tkinter_constants.END)
-        self.section_value_entry.insert(0, ', '.join(values['sec_changes']))
-        self.blockquote_value_entry.delete(0, tkinter_constants.END)
-        self.blockquote_value_entry.insert(0, ', '.join(values['block_changes']))
         self.attrs_value_entry.delete(0, tkinter_constants.END)
         self.attrs_value_entry.insert(0, ', '.join(values['attrs']))
 
@@ -228,41 +146,9 @@ class guiConfig(tkinter.Toplevel):
 
     def cmdDo(self):
         '''Grab any changes and store them'''
-        tmp_list = self.span_value.get().strip(' ').split(',')
-        self.temp_values['span_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.div_value.get().strip(' ').split(',')
-        self.temp_values['div_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.p_value.get().strip(' ').split(',')
-        self.temp_values['p_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.i_value.get().strip(' ').split(',')
-        self.temp_values['i_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.em_value.get().strip(' ').split(',')
-        self.temp_values['em_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.b_value.get().strip(' ').split(',')
-        self.temp_values['b_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.strong_value.get().strip(' ').split(',')
-        self.temp_values['strong_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.u_value.get().strip(' ').split(',')
-        self.temp_values['u_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.a_value.get().strip(' ').split(',')
-        self.temp_values['a_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.small_value.get().strip(' ').split(',')
-        self.temp_values['small_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.section_value.get().strip(' ').split(',')
-        self.temp_values['sec_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
-
-        tmp_list = self.blockquote_value.get().strip(' ').split(',')
-        self.temp_values['block_changes'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
+        for tag in self.taglist:
+            tmp_list = self.tkinter_vars[tag].get().strip(' ').split(',')
+            self.temp_values['{}_changes'.format(tag)] = remove_dupes([x.strip(' ') for x in tmp_list if x])
 
         tmp_list = self.attrs_value.get().strip(' ').split(',')
         self.temp_values['attrs'] = remove_dupes([x.strip(' ') for x in tmp_list if x])
