@@ -127,7 +127,17 @@ class MarkupParser(object):
             while s[p:p+1] == ' ':
                 p += 1
         b = p
-        while s[p:p+1] not in ('>', '/', ' ', '"', "\r", "\n"):
+        # handle comment special case as there may be no spaces to 
+        # delimit name begin or end 
+        if s[b:].startswith('!--'):
+            p = b+3
+            tname = '!--'
+            ttype = 'passthru'
+            info = s[p:-3].strip()
+            tattr = {}
+            tattr['info'] = info
+            return ttype, tname, tattr
+        while s[p:p+1] not in ('>', '/', ' ', '"', "'", "\r", "\n"):
             p += 1
         tname=s[b:p].lower()
         # some special cases
