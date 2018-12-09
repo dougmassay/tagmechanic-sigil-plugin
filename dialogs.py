@@ -12,10 +12,12 @@ from compatibility_utils import PY2
 if PY2:
     import Tkinter as tkinter
     import Tkconstants as tkinter_constants
+    import tkFont
     range = xrange
 else:
     import tkinter
     import tkinter.constants as tkinter_constants
+    import tkinter.font as tkFont
 
 
 def remove_dupes(values):
@@ -32,11 +34,13 @@ def remove_dupes(values):
     return output
 
 class guiConfig(tkinter.Toplevel):
-    def __init__(self, parent, defaults):
+    def __init__(self, parent, defaults, font_tweaks):
         tkinter.Toplevel.__init__(self, parent, border=5)
         self.resizable(False, False)
         self.title('Plugin Customization')
         self.maingui = parent
+        # define a bold font based on font_tweaks for labels
+        self.label_font = tkFont.Font(family=font_tweaks['font_family'], size=int(font_tweaks['font_size']), weight=tkFont.BOLD)
         # Copy taglist, combox values and their original defaults from main plugin.py
         self.taglist = self.maingui.taglist
         self.temp_values = self.maingui.combobox_values
@@ -84,7 +88,7 @@ class guiConfig(tkinter.Toplevel):
             # Add label and text entry widget to current column.
             entry_frame = tkinter.Frame(column[curr_col], pady=5)
             lbl = tkinter.Label(entry_frame, text='Choices to change "{}" elements to:'.format(tag),
-                                font='Helvetica -12 bold')
+                                font=self.label_font)
             lbl.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
             self.tkinter_vars[tag] = tkinter.StringVar()
             self.tkentry_widgets[tag] = tkinter.Entry(entry_frame, textvariable=self.tkinter_vars[tag])
@@ -95,7 +99,7 @@ class guiConfig(tkinter.Toplevel):
         # Create the label/text-entry widget for the html attributes list
         attrs_frame = tkinter.Frame(body, pady=10)
         attrs_label = tkinter.Label(attrs_frame, text='HTML attributes available to search for:',
-                                    font='Helvetica -12 bold')
+                                    font=self.label_font)
         attrs_label.pack(side=tkinter_constants.TOP, fill=tkinter_constants.X)
         self.attrs_value = tkinter.StringVar()
         self.attrs_value_entry = tkinter.Entry(attrs_frame, textvariable=self.attrs_value)

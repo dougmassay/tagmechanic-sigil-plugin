@@ -38,6 +38,11 @@ gui_selections = {
     'attrs'  : 0,
 }
 
+font_tweaks = {
+    'font_family' : 'Helvetica',
+    'font_size'   : '10',
+}
+
 miscellaneous_settings = {
     'windowGeometry' : None,
 }
@@ -122,6 +127,7 @@ class guiMain(tkinter.Frame):
         # Edit Plugin container object
         self.bk = bk
         # Handy prefs groupings
+        self.font_tweaks = prefs['font_tweaks']
         self.gui_prefs = prefs['gui_selections']
         self.misc_prefs = prefs['miscellaneous_settings']
         self.update_prefs = prefs['update_settings']
@@ -481,7 +487,7 @@ class guiMain(tkinter.Frame):
 
     def showConfig(self):
         ''' Launch Customization Dialog '''
-        guiConfig(self, combobox_defaults)
+        guiConfig(self, combobox_defaults, self.font_tweaks)
 
     def quitApp(self):
         '''Clean up and close Widget'''
@@ -509,10 +515,13 @@ class guiMain(tkinter.Frame):
 
     def showCmdOutput(self, msg, tag='nochange'):
         '''Write messages to the scrolling textbox.'''
-        normalFont = tkFont.Font(size=9, weight=tkFont.NORMAL)
-        boldBigFont = tkFont.Font(size=10, weight=tkFont.BOLD)
-        boldFont = tkFont.Font(size=9, weight=tkFont.BOLD)
-        summaryFont = tkFont.Font(size=9, weight=tkFont.BOLD, underline=True)
+        normalFont = tkFont.Font(family=self.font_tweaks['font_family'], size=int(self.font_tweaks['font_size']), weight=tkFont.NORMAL)
+        if int(self.font_tweaks['font_size']) < 0:
+            boldBigFont = tkFont.Font(family=self.font_tweaks['font_family'], size=int(self.font_tweaks['font_size'])-1, weight=tkFont.BOLD)
+        else:
+            boldBigFont = tkFont.Font(family=self.font_tweaks['font_family'], size=int(self.font_tweaks['font_size'])+1, weight=tkFont.BOLD)
+        boldFont = tkFont.Font(family=self.font_tweaks['font_family'], size=int(self.font_tweaks['font_size']), weight=tkFont.BOLD)
+        summaryFont = tkFont.Font(family=self.font_tweaks['font_family'], size=int(self.font_tweaks['font_size']), weight=tkFont.BOLD, underline=True)
 
         self.results.tag_config('nochange', lmargin1=10, lmargin2=30, spacing1=3, font=normalFont)
         self.results.tag_config('header', spacing1=5, spacing3=5, font=boldBigFont)
@@ -543,9 +552,13 @@ def run(bk):
     global prefs
     prefs = bk.getPrefs()
 
+    if 'font_tweaks' not in prefs:
+        prefs['font_tweaks'] = font_tweaks
+    else: # otherwise, use the piecemeal method in case new prefs have been added since json creation.
+        check_for_new_prefs(prefs['font_tweaks'], font_tweaks)
     if 'gui_selections' not in prefs:  # If the json doesn't exist yet, assign wholesale defaults.
         prefs['gui_selections'] = gui_selections
-    else:  # otherwise, use the piecemeal method in case new prefs have been added since json creation.
+    else:
         check_for_new_prefs(prefs['gui_selections'], gui_selections)
     if 'miscellaneous_settings' not in prefs:
         prefs['miscellaneous_settings']= miscellaneous_settings
@@ -565,7 +578,8 @@ def run(bk):
     root.title('')
     root.resizable(True, True)
     root.minsize(420, 325)
-    root.option_add('*font', 'Arial -12')
+    default_font = tkFont.Font(family=prefs['font_tweaks']['font_family'], size=int(prefs['font_tweaks']['font_size']))
+    root.option_add('*font', default_font)
     if not sys.platform.startswith('darwin'):
         img = tkinter.Image('photo', file=os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'images/icon.png'))
         root.tk.call('wm','iconphoto',root._w,img)
