@@ -7,22 +7,26 @@ from __future__ import unicode_literals, division, absolute_import, print_functi
 import os
 import sys
 import re
+import subprocess
 import shutil
 import inspect
 import zipfile
+import optparse
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 PLUGIN_NAME = 'TagMechanic'
 TEMP_DIR = os.path.join(SCRIPT_DIR, PLUGIN_NAME)
+TRANS_NAME = 'translations'
+TRANS_SRC = os.path.join(SCRIPT_DIR, TRANS_NAME)
+TRANS_DEST = os.path.join(SCRIPT_DIR, PLUGIN_NAME, TRANS_NAME)
 
 PLUGIN_FILES = ['dialogs.py',
-            'images',
             'parsing_engine.py',
             'plugin.py',
             'plugin.xml',
-            'tk_tooltips.py',
-            'updatecheck.py']
+            'utilities.py',
+            'plugin.png']
 
 def findVersion():
     _version_pattern = re.compile(r'<version>([^<]*)</version>')
@@ -32,6 +36,7 @@ def findVersion():
     if match is not None:
         return '{}'.format(match.group(1))
     return '0.X.X'
+
 
 # Find version info from plugin.xml and build zip file name from it
 VERS_INFO =  findVersion()
@@ -59,7 +64,7 @@ def removePreviousTmp(rmzip=False):
         shutil.rmtree(TEMP_DIR)
 
     if rmzip:  # Remove zip file if indicated.
-        print ('Removing any current zip file ...')
+        print('Removing any current zip file ...')
         if os.path.exists(ARCHIVE_NAME):
             os.remove(ARCHIVE_NAME)
 
@@ -77,14 +82,21 @@ def ignore_in_dirs(base, items, ignored_dirs=None):
                 ans.append(name)
     return ans
 
+
 if __name__ == "__main__":
+    parser = optparse.OptionParser()
+    parser.add_option('-l', '--language',
+                  dest="compile_lang",
+                  default=False,
+                  action="store_true")
+    options, args = parser.parse_args()
     print('Removing any previous build leftovers ...')
     removePreviousTmp(rmzip=True)
 
-    print ('Creating temp {} directory ...'.format(PLUGIN_NAME))
+    print('Creating temp {} directory ...'.format(PLUGIN_NAME))
     os.mkdir(TEMP_DIR)
 
-    print ('Copying everything to temp {} directory ...'.format(PLUGIN_NAME))
+    print('Copying everything to temp {} directory ...'.format(PLUGIN_NAME))
     for entry in PLUGIN_FILES:
         entry_path = os.path.join(SCRIPT_DIR, entry)
         if os.path.exists(entry_path) and os.path.isdir(entry_path):
@@ -93,13 +105,27 @@ if __name__ == "__main__":
             shutil.copy2(entry_path, os.path.join(TEMP_DIR, entry))
         else:
             sys.exit('Couldn\'t copy necessary plugin files!')
+    os.mkdir(TRANS_DEST)
+    if options.compile_lang:
+        if os.path.exists(TRANS_SRC) and os.path.isdir(TRANS_SRC):
+            for name in os.listdir(TRANS_SRC):
+                if name !='template.ts' and name.rpartition('.')[-1] == ('ts'):
+                    ts_name = os.path.join(TRANS_SRC, name)
+                    qm_name = '{}.{}'.format(os.path.join(TRANS_DEST, os.path.splitext(name)[0]), 'qm')
+                    command = ['lrelease',
+                               ts_name,
+                               '-qm',
+                               qm_name
+                               ]
+                    print('Compiling {} with lrelease'.format(name))
+                    proc = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
-    print ('Creating {} ...'.format(os.path.basename(ARCHIVE_NAME)))
+    print('Creating {} ...'.format(os.path.basename(ARCHIVE_NAME)))
     outzip = zipfile.ZipFile(ARCHIVE_NAME, 'w')
     zipUpDir(outzip, SCRIPT_DIR, os.path.basename(TEMP_DIR))
     outzip.close()
 
-    print ('Plugin successfully created!')
+    print('Plugin successfully created!')
 
     print('Removing temp build directory ...')
     removePreviousTmp()

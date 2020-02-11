@@ -43,3 +43,6 @@ TagMechanic/
 
 # Zip files (plugin releases)
 *.zip
+
+# compiled translations files
+*.qm

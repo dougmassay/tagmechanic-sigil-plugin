@@ -127,8 +127,8 @@ class MarkupParser(object):
             while s[p:p+1] == ' ':
                 p += 1
         b = p
-        # handle comment special case as there may be no spaces to 
-        # delimit name begin or end 
+        # handle comment special case as there may be no spaces to
+        # delimit name begin or end
         if s[b:].startswith('!--'):
             p = b+3
             tname = '!--'
