@@ -12,13 +12,19 @@ from utilities import UpdateChecker, taglist, tuple_version, combobox_defaults, 
 from parsing_engine import MarkupParser
 
 try:
-    from PySide2.Qt import (Qt, QApplication, QCoreApplication, qVersion, QDialog, QWidget, QMainWindow, QMessageBox, QTranslator,
-                    QAction, QHBoxLayout, QVBoxLayout, QLabel, QCheckBox, QLineEdit, QComboBox, QPushButton,
-                    QTextEdit, QDialogButtonBox, QByteArray, QIcon, QColor, QPalette, QStyleFactory, QLibraryInfo)
+    from PySide2.QtCore import Q, QByteArray, QCoreApplication, QLibraryInfo, QTranslator, qVersion
+    from PySide2.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
+    from PySide2.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
+    from PySide2.QtWidgets import QStyleFactory, QTextEdit, QVBoxLayout, QWidget
+    from PySide2.QtGui import QColor, QIcon, QPalette
+    print('Pyside2')
 except ImportError:
-    from PyQt5.Qt import (Qt, QApplication, QCoreApplication, qVersion, QDialog, QWidget, QMainWindow, QMessageBox, QTranslator,
-                    QAction, QHBoxLayout, QVBoxLayout, QLabel, QCheckBox, QLineEdit, QComboBox, QPushButton,
-                    QTextEdit, QDialogButtonBox, QByteArray, QIcon, QColor, QPalette, QStyleFactory, QLibraryInfo)
+    from PyQt5.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTranslator, qVersion
+    from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
+    from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
+    from PyQt5.QtWidgets import QStyleFactory, QTextEdit, QVBoxLayout, QWidget
+    from PyQt5.QtGui import QColor, QIcon, QPalette
+    print('PyQt5')
 
 BAIL_OUT = False
 PROCESSED = False
