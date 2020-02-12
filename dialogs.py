@@ -12,7 +12,7 @@ from utilities import UpdateChecker, taglist, tuple_version, combobox_defaults, 
 from parsing_engine import MarkupParser
 
 try:
-    from PySide2.QtCore import Q, QByteArray, QCoreApplication, QLibraryInfo, QTranslator, qVersion
+    from PySide2.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTranslator, qVersion
     from PySide2.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PySide2.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PySide2.QtWidgets import QStyleFactory, QTextEdit, QVBoxLayout, QWidget
