@@ -5,9 +5,10 @@
 from __future__ import unicode_literals, division, absolute_import, print_function
 
 import sys
+import os
 
 from dialogs import launch_gui
-from utilities import setupPrefs
+from utilities import setupPrefs, check_for_custom_icon, get_icon_color, change_icon_color
 
 
 prefs = {}
@@ -29,8 +30,22 @@ def run(bk):
         return -1
 
     global prefs
+
     prefs = bk.getPrefs()
     prefs = setupPrefs(prefs)
+
+    prefs_folder = os.path.join(os.path.dirname(bk._w.plugin_dir), "plugins_prefs", bk._w.plugin_name)
+    if not check_for_custom_icon(prefs_folder):
+        svg = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, "plugin.svg")
+        if os.path.exists(svg) and os.path.isfile(svg):
+            original_color = get_icon_color(svg)
+            new_color = prefs['miscellaneous_settings']['icon_color']
+            if original_color is not None and original_color != new_color:
+                try:
+                    change_icon_color(svg, original_color, new_color)
+                    prefs['miscellaneous_settings']['icon_color'] = new_color
+                except Exception:
+                    print('Couldn\'t change icon color!')
 
     bailOut = launch_gui(bk, prefs)
 

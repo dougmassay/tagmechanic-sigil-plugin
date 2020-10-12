@@ -37,12 +37,12 @@ http://www.mobileread.com/forums/showthread.php?t=251452.
 The core plugin files (this is where most contributors will spend their time) are:
 
     > dialogs.py
-    > images/icon.png
+    > plugin.png
+    > plugin.svg
     > parsing_engine.py
     > plugin.py
     > plugin.xml
-    > tk_tooltips.py
-    > updatecheck.py
+    > utilities.py
 
 
 Files used for building/maintaining the plugin:
@@ -54,6 +54,10 @@ Files used for building/maintaining the plugin:
 
 Feel free to fork the repository and submit pull requests (or just use it privately to experiment).
 
+Files used for translations:
+    > translations/template.ts
+
+To any potential volunteer translators: There's nothing terribly complicated. Just a bunch of strings strings that probably won't be changing much (if at all) in the future. Contact me if you're interested in translating the plugin. The gist is this: fork the repo; copy the template.ts file (in the translations folder) to tagmechanic_(pl|es|fr).ts (or whatever your language's code is) and use Qt's Linguist to translate the strings. Then submit a pull request and I'll compile the language files for use in the plugin.
 
 
 License Information

@@ -30,6 +30,7 @@ font_tweaks = {
 miscellaneous_settings = {
     'windowGeometry' : None,
     'language_override': None,
+    'icon_color': '#27AAE1',
 }
 
 update_settings = {
@@ -80,6 +81,40 @@ def remove_dupes(values):
             seen.add(value)
     return output
 
+def check_for_custom_icon(prefs_dir):
+    def icon_check(iconpath):
+        if os.path.exists(iconpath) and os.path.isfile(iconpath):
+            return True
+        else:
+            return False
+    if icon_check(os.path.join(prefs_dir, "plugin.svg")):
+        return True
+    elif icon_check(os.path.join(prefs_dir, "plugin.png")):
+        return True
+    else:
+        return False
+
+def change_icon_color(svg, original_color, new_color):
+    with open(svg, 'rb') as f:
+        data = f.read()
+    data = data.decode('utf-8')
+    data = data.replace(original_color, new_color)
+    data = data.encode('utf-8')
+    with open(svg, 'wb') as fo:
+        fo.write(data)
+
+def get_icon_color(svg):
+    import regex as re
+    regexp = r'''fill="(#([0-9a-fA-F])+)"'''
+    data = ''
+    with open(svg, 'rb') as f:
+        data = f.read()
+    data = data.decode('utf-8')
+    m = re.search(regexp, data)
+    if m is not None:
+        return m.group(1)
+    else:
+        return None
 
 def valid_attributes(tattr):
     ''' This is not going to catch every, single way a user can screw this up, but

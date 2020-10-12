@@ -33,7 +33,7 @@ _t = QCoreApplication.translate
 
 def launch_gui(bk, prefs):
     app = QApplication([])
-    icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.png')
+    icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
     app.setWindowIcon(QIcon(icon))
 
     if tuple_version(qVersion()) >= (5, 10, 0):
