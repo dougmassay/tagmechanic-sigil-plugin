@@ -16,14 +16,14 @@ try:
     from PySide2.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PySide2.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PySide2.QtWidgets import QStyleFactory, QTextEdit, QVBoxLayout, QWidget
-    from PySide2.QtGui import QColor, QIcon, QPalette
+    from PySide2.QtGui import QColor, QFont, QIcon, QPalette
     print('Pyside2')
 except ImportError:
     from PyQt5.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTranslator, qVersion
     from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PyQt5.QtWidgets import QStyleFactory, QTextEdit, QVBoxLayout, QWidget
-    from PyQt5.QtGui import QColor, QIcon, QPalette
+    from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
     print('PyQt5')
 
 BAIL_OUT = False
@@ -32,6 +32,8 @@ _t = QCoreApplication.translate
 
 
 def launch_gui(bk, prefs):
+    setup_highdpi(bk._w.highdpi)
+    setup_ui_font(bk._w.uifont)
     app = QApplication([])
     icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
     app.setWindowIcon(QIcon(icon))
@@ -118,6 +120,24 @@ def dark_palette(bk, app):
     app.setStyle(QStyleFactory.create("Fusion"))
     app.setPalette(p)
 
+def setup_highdpi(highdpi):
+    has_env_setting = False
+    env_vars = ('QT_AUTO_SCREEN_SCALE_FACTOR', 'QT_SCALE_FACTOR', 'QT_SCREEN_SCALE_FACTORS', 'QT_DEVICE_PIXEL_RATIO')
+    for v in env_vars:
+        if os.environ.get(v):
+            has_env_setting = True
+            break
+    if highdpi == 'on' or (highdpi == 'detect' and not has_env_setting):
+        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    elif highdpi == 'off':
+        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+        for p in env_vars:
+            os.environ.pop(p, None)
+
+def setup_ui_font(font_str):
+    font = QFont()
+    font.fromString(font_str)
+    QApplication.setFont(font)
 
 class ConfigDialog(QDialog):
     def __init__(self, parent, combobox_values):
