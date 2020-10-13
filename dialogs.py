@@ -8,18 +8,18 @@ import os
 import sys
 import math
 
-from utilities import UpdateChecker, taglist, tuple_version, combobox_defaults, remove_dupes
+from utilities import UpdateChecker, taglist, tuple_version, combobox_defaults, remove_dupes, ismacos, iswindows
 from parsing_engine import MarkupParser
 
 try:
-    from PySide2.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTranslator, qVersion
+    from PySide2.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTimer, QTranslator, qVersion
     from PySide2.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PySide2.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PySide2.QtWidgets import QStyleFactory, QTextEdit, QVBoxLayout, QWidget
     from PySide2.QtGui import QColor, QFont, QIcon, QPalette
     print('Pyside2')
 except ImportError:
-    from PyQt5.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTranslator, qVersion
+    from PyQt5.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTimer, QTranslator, qVersion
     from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PyQt5.QtWidgets import QStyleFactory, QTextEdit, QVBoxLayout, QWidget
@@ -32,8 +32,13 @@ _t = QCoreApplication.translate
 
 
 def launch_gui(bk, prefs):
-    setup_highdpi(bk._w.highdpi)
+    if not ismacos:
+        setup_highdpi(bk._w.highdpi)
     setup_ui_font(bk._w.uifont)
+    if not ismacos and not iswindows:
+        # Qt 5.10.1 on Linux resets the global font on first event loop tick.
+        # So workaround it by setting the font once again in a timer.
+        QTimer.singleShot(0, lambda : setup_ui_font(bk._w.uifont))
     app = QApplication([])
     icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
     app.setWindowIcon(QIcon(icon))
