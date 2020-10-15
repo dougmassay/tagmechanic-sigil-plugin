@@ -64,7 +64,7 @@
     <message>
         <location filename="../dialogs.py" line="277"/>
         <source>Modify</source>
-        <translation>Modifikuj</translation>
+        <translation>Modyfikuj</translation>
     </message>
     <message>
         <location filename="../dialogs.py" line="278"/>
