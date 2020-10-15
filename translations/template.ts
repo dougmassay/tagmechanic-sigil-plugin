@@ -81,6 +81,16 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../dialogs.py" line="282"/>
+        <source>&amp;Config</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogs.py" line="286"/>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../dialogs.py" line="297"/>
         <source>Action type:</source>
         <translation type="unfinished"></translation>

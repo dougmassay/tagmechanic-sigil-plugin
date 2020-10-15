@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="pl" sourcelanguage="en">
+<!DOCTYPE TS><TS version="2.0" language="pl" sourcelanguage="en">
 <context>
     <name>ConfigDialog</name>
     <message>
