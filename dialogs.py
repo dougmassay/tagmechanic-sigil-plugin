@@ -279,11 +279,11 @@ class guiMain(QMainWindow):
         self.NO_CHANGE_STR = _t('guiMain', 'No change')
         self.setWindowTitle(_t('guiMain', 'Tag Mechanic'))
 
-        configAct = QAction('&Config', self)
+        configAct = QAction(_t('guiMain', '&Config'), self)
         configAct.triggered.connect(self.showConfig)
 
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&Edit')
+        fileMenu = menubar.addMenu(_t('guiMain', '&Edit'))
         fileMenu.addAction(configAct)
 
         layout = QVBoxLayout()
