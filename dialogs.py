@@ -504,8 +504,8 @@ class guiMain(QMainWindow):
             if occurrences:
                 # write changed markup back to file
                 self.bk.writefile(ident, html)
-                self.text_panel.insertHtml('<p>{} {}: {}</p>\n'.format(
-                    _t('guiMain', 'Occurrences found/changed in'), href, occurrences))
+                self.text_panel.insertHtml('<p>{} {}:&#160;&#160;&#160;{}</p>\n'.format(
+                    _t('guiMain', 'Occurrences found/changed in'), href, int(occurrences)))
             else:
                 self.text_panel.insertHtml('<p>{} {}</p>\n'.format(
                     _t('guiMain', 'Criteria not found in'), href))
@@ -515,8 +515,8 @@ class guiMain(QMainWindow):
             self.quit_button.setText(_t('guiMain', 'Commit and Exit'))
             self.quit_button.setToolTip('<p>{}'.format(_t('guiMain', 'Commit all changes and exit')))
             self.abort_button.setDisabled(False)
-            self.text_panel.insertHtml('<br><h4>{}: {}</h4>'.format(
-                _t('guiMain', 'Total occurrences found/changed'), totals))
+            self.text_panel.insertHtml('<br><h4>{}:&#160;&#160;&#160;{}</h4>'.format(
+                _t('guiMain', 'Total occurrences found/changed'), int(totals)))
         else:
             self.text_panel.insertHtml('<br><h4>{}</h4>'.format(
                 _t('guiMain', 'No changes made to book')))
