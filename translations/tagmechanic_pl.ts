@@ -193,12 +193,12 @@
     <message>
         <location filename="../dialogs.py" line="528"/>
         <source>Occurrences found/changed in</source>
-        <translation>Wystąpienia znajdź/zamień w</translation>
+        <translation>Znalezienia w</translation>
     </message>
     <message>
         <location filename="../dialogs.py" line="531"/>
         <source>Criteria not found in</source>
-        <translation>Kryteria nie znalezione w</translation>
+        <translation>Brak znalezień w</translation>
     </message>
     <message>
         <location filename="../dialogs.py" line="536"/>
@@ -213,7 +213,7 @@
     <message>
         <location filename="../dialogs.py" line="539"/>
         <source>Total occurrences found/changed</source>
-        <translation>Razem wystąpienia znajdź/zamień</translation>
+        <translation>W sumie znalezień</translation>
     </message>
     <message>
         <location filename="../dialogs.py" line="542"/>
@@ -228,7 +228,7 @@
     <message>
         <location filename="../dialogs.py" line="312"/>
         <source>Plugin Update Available</source>
-        <translation type="unfinished"></translation>
+        <translation>Dostępna nowa wersja wtyczki</translation>
     </message>
 </context>
 </TS>
