@@ -56,174 +56,179 @@
 <context>
     <name>guiMain</name>
     <message>
-        <location filename="../dialogs.py" line="285"/>
+        <location filename="../dialogs.py" line="289"/>
         <source>Delete</source>
         <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="286"/>
+        <location filename="../dialogs.py" line="290"/>
         <source>Modify</source>
         <translation>Modyfikuj</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="287"/>
+        <location filename="../dialogs.py" line="291"/>
         <source>No attributes (naked tag)</source>
         <translation>Bez atrybutów („goły” znacznik)</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="288"/>
+        <location filename="../dialogs.py" line="292"/>
         <source>No change</source>
         <translation>Nie zmieniaj</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="289"/>
+        <location filename="../dialogs.py" line="293"/>
         <source>Tag Mechanic</source>
         <translation>Tag Mechanic</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="291"/>
+        <location filename="../dialogs.py" line="295"/>
         <source>&amp;Config</source>
         <translation>&amp;Dostosuj wtyczkę</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="295"/>
+        <location filename="../dialogs.py" line="299"/>
         <source>&amp;Edit</source>
         <translation>&amp;Edycja</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="306"/>
+        <location filename="../dialogs.py" line="318"/>
         <source>Action type:</source>
         <translation>Akcja do wykonania:</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="316"/>
+        <location filename="../dialogs.py" line="328"/>
         <source>Tag name:</source>
         <translation>Nazwa znacznika:</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="326"/>
+        <location filename="../dialogs.py" line="338"/>
         <source>Having the attribute:</source>
         <translation>Z atrybutem:</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="337"/>
+        <location filename="../dialogs.py" line="349"/>
         <source>Whose value is (no quotes):</source>
         <translation>O podanej wartości (bez cudzysłowów):</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="341"/>
+        <location filename="../dialogs.py" line="353"/>
         <source>Regex</source>
         <translation>Regex</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="346"/>
+        <location filename="../dialogs.py" line="358"/>
         <source>Change tag to:</source>
         <translation>Zamień znacznik na:</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="359"/>
+        <location filename="../dialogs.py" line="371"/>
         <source>New attribute string to insert (entire):</source>
         <translation>Nowe atrybuty do wstawienia (całość):</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="363"/>
+        <location filename="../dialogs.py" line="375"/>
         <source>Copy existing attribute string</source>
         <translation>Kopiuj istniejące atrybuty</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="378"/>
+        <location filename="../dialogs.py" line="390"/>
         <source>Process</source>
         <translation>Przetwarzaj</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="379"/>
+        <location filename="../dialogs.py" line="391"/>
         <source>Process selected files with current criteria</source>
         <translation>Przetwarzaj wybrane pliki według aktualnych kryteriów</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="383"/>
+        <location filename="../dialogs.py" line="395"/>
         <source>Abort Changes</source>
         <translation>Przerwij zmiany</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="384"/>
+        <location filename="../dialogs.py" line="396"/>
         <source>Make no changes and exit</source>
         <translation>Nic nie zmieniaj i wyjdź</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="389"/>
+        <location filename="../dialogs.py" line="401"/>
         <source>Quit</source>
         <translation>Wyjdź</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="390"/>
+        <location filename="../dialogs.py" line="402"/>
         <source>Quit with no changes</source>
         <translation>Wyjdź bez dokonywania zmian</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="469"/>
+        <location filename="../dialogs.py" line="481"/>
         <source>Error</source>
         <translation>Błąd</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="456"/>
+        <location filename="../dialogs.py" line="468"/>
         <source>Must enter a value for the attribute selected</source>
         <translation>Musisz podać wartość dla wybranego atrybutu</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="470"/>
+        <location filename="../dialogs.py" line="482"/>
         <source>What--exactly--would that achieve?</source>
         <translation>Co dokładnie chcesz osiągnąć?</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="487"/>
+        <location filename="../dialogs.py" line="499"/>
         <source>Starting</source>
         <translation>Rozpoczynam</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="507"/>
+        <location filename="../dialogs.py" line="519"/>
         <source>Error parsing</source>
         <translation>Błąd parsowania</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="507"/>
+        <location filename="../dialogs.py" line="519"/>
         <source>File skipped</source>
         <translation>Plik ominięto</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="516"/>
+        <location filename="../dialogs.py" line="528"/>
         <source>Occurrences found/changed in</source>
         <translation>Wystąpienia znajdź/zamień w</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="519"/>
+        <location filename="../dialogs.py" line="531"/>
         <source>Criteria not found in</source>
         <translation>Kryteria nie znalezione w</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="524"/>
+        <location filename="../dialogs.py" line="536"/>
         <source>Commit and Exit</source>
         <translation>Zatwierdź i zakończ</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="525"/>
+        <location filename="../dialogs.py" line="537"/>
         <source>Commit all changes and exit</source>
         <translation>Zatwierdź wszystkie zmiany i wyjdź</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="527"/>
+        <location filename="../dialogs.py" line="539"/>
         <source>Total occurrences found/changed</source>
         <translation>Razem wystąpienia znajdź/zamień</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="530"/>
+        <location filename="../dialogs.py" line="542"/>
         <source>No changes made to book</source>
         <translation>Nie dokonano żadnych zmian w książce</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="532"/>
+        <location filename="../dialogs.py" line="544"/>
         <source>Finished</source>
         <translation>Zakończono</translation>
+    </message>
+    <message>
+        <location filename="../dialogs.py" line="312"/>
+        <source>Plugin Update Available</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
