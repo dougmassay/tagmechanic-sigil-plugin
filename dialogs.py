@@ -436,8 +436,10 @@ class guiMain(QMainWindow):
             self.newattr_txt.setDisabled(False)
             self.copy_attr.setDisabled(False)
 
+        self.update_txt_box()
+
     def update_txt_box(self):
-        if self.copy_attr.isChecked():
+        if self.copy_attr.isChecked() or not self.copy_attr.isEnabled():
             self.newattr_txt.clear()
             self.newattr_txt.setDisabled(True)
         else:
