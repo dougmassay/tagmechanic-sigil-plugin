@@ -120,11 +120,11 @@ if __name__ == "__main__":
                                ]
                     print('Subprocess command', command)
                     print('Compiling {} with lrelease'.format(name))
-                    #proc = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    # proc = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     try:
                         proc = subprocess.run(command, capture_output=True, text=True)
                         print("stdout:", proc.stdout)
-                    except Error:
+                    except Exception:
                         print("stderr:", proc.stderr)
 
     print('Creating {} ...'.format(os.path.basename(ARCHIVE_NAME)))
