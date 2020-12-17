@@ -21,10 +21,10 @@ jobs:
       with:
         python-version: 3.8
     - uses: actions/cache@main
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-test-build
-          restore-keys: |
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-test-build
+        restore-keys: |
             ${{ runner.os }}-pip-test-build
     - name: Install dependencies
       run: |
