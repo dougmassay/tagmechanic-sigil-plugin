@@ -35,7 +35,6 @@ jobs:
         version: '5.9.5'
         dir: ${{runner.workspace}}/Qt
         setup-python: 'false'
-        tools-only: true
         cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
     - uses: actions/cache@v2
