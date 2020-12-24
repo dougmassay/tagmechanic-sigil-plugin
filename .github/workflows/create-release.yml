@@ -53,6 +53,10 @@ jobs:
       - name: Build Plugin
         run: python buildplugin --language
 
+      - name: Get tag name
+        id: get_version
+        run: echo ::set-output name=TAGNAME::${GITHUB_REF/refs\/tags\//}
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -60,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
           tag_name: ${{ github.ref }}
-          release_name: Tagmechanic ${{ github.ref }}
+          release_name: TagMechanic ${{ github.ref }}
           body: |
             Changes in this Release
             - First Change
@@ -75,6 +79,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./TagMechanic_${{ github.ref }}.zip
-          asset_name: TagMechanic_${{ github.ref }}.zip
+          asset_path: ./TagMechanic_${{ steps.get_tag_name.outputs.TAGNAME }}.zip
+          asset_name: TagMechanic_${{ steps.get_tag_name.outputs.TAGNAME }}.zip
           asset_content_type: application/zip
