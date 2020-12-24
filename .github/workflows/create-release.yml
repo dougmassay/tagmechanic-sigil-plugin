@@ -54,7 +54,7 @@ jobs:
         run: python buildplugin --language
 
       - name: Get tag name
-        id: get_version
+        id: get_tag_name
         run: echo ::set-output name=TAGNAME::${GITHUB_REF/refs\/tags\//}
 
       - name: Create Release
