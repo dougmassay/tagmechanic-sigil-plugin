@@ -1,0 +1,14 @@
+name: update remote versions
+on: 
+  schedule:
+   - cron: "*/5 * * * *"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+
+      - name: remote query
+        run: python $GITHUB_WORKSPACE/.github/workflows\vers_update.py -r sigil-ebook/sigil -p [dummy]
