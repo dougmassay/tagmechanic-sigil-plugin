@@ -11,4 +11,4 @@ jobs:
           ref: gh-pages
 
       - name: remote query
-        run: python $GITHUB_WORKSPACE/.github/workflows\vers_update.py -r sigil-ebook/sigil -p [dummy]
+        run: python $GITHUB_WORKSPACE/.github/workflows/vers_update.py -r sigil-ebook/sigil -p [dummy]
