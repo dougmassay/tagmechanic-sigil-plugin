@@ -161,67 +161,67 @@
         <translation>Wyjdź bez dokonywania zmian</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="481"/>
+        <location filename="../dialogs.py" line="483"/>
         <source>Error</source>
         <translation>Błąd</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="468"/>
+        <location filename="../dialogs.py" line="470"/>
         <source>Must enter a value for the attribute selected</source>
         <translation>Musisz podać wartość dla wybranego atrybutu</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="482"/>
+        <location filename="../dialogs.py" line="484"/>
         <source>What--exactly--would that achieve?</source>
         <translation>Co dokładnie chcesz osiągnąć?</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="499"/>
+        <location filename="../dialogs.py" line="501"/>
         <source>Starting</source>
         <translation>Rozpoczynam</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="519"/>
+        <location filename="../dialogs.py" line="521"/>
         <source>Error parsing</source>
         <translation>Błąd parsowania</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="519"/>
+        <location filename="../dialogs.py" line="521"/>
         <source>File skipped</source>
         <translation>Plik ominięto</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="528"/>
+        <location filename="../dialogs.py" line="530"/>
         <source>Occurrences found/changed in</source>
         <translation>Znalezienia w</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="531"/>
+        <location filename="../dialogs.py" line="533"/>
         <source>Criteria not found in</source>
         <translation>Brak znalezień w</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="536"/>
+        <location filename="../dialogs.py" line="539"/>
         <source>Commit and Exit</source>
         <translation>Zatwierdź i zakończ</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="537"/>
+        <location filename="../dialogs.py" line="540"/>
         <source>Commit all changes and exit</source>
         <translation>Zatwierdź wszystkie zmiany i wyjdź</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="539"/>
+        <location filename="../dialogs.py" line="542"/>
         <source>Total occurrences found/changed</source>
         <translation>W sumie znalezień</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="542"/>
+        <location filename="../dialogs.py" line="545"/>
         <source>No changes made to book</source>
         <translation>Nie dokonano żadnych zmian w książce</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="544"/>
+        <location filename="../dialogs.py" line="547"/>
         <source>Finished</source>
         <translation>Zakończono</translation>
     </message>

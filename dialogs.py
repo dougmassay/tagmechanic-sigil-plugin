@@ -527,11 +527,12 @@ class guiMain(QMainWindow):
             if occurrences:
                 # write changed markup back to file
                 self.bk.writefile(ident, html)
-                self.text_panel.insertHtml('<p>{} {}:&#160;&#160;&#160;{}</p>\n'.format(
+                self.text_panel.insertHtml('<p>{} {}:&#160;&#160;&#160;{}</p>'.format(
                     _t('guiMain', 'Occurrences found/changed in'), href, int(occurrences)))
             else:
                 self.text_panel.insertHtml('<p>{} {}</p>\n'.format(
                     _t('guiMain', 'Criteria not found in'), href))
+            self.text_panel.insertPlainText('\n')
 
         # report totals
         if totals:
