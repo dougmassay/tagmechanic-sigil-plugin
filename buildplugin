@@ -21,7 +21,8 @@ TRANS_NAME = 'translations'
 TRANS_SRC = os.path.join(SCRIPT_DIR, TRANS_NAME)
 TRANS_DEST = os.path.join(SCRIPT_DIR, PLUGIN_NAME, TRANS_NAME)
 
-PLUGIN_FILES = ['dialogs.py',
+PLUGIN_FILES = ['compat.py',
+            'dialogs.py',
             'parsing_engine.py',
             'plugin.py',
             'plugin.xml',

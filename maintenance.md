@@ -11,3 +11,7 @@ Do that for each of the .ts files.
 If no translataion strings were added or changed, that's it. Only the line numbers were adjusted and the buildplugin script will compile them and add them to the plugin.
 
 If translation strings WERE added or changed, then volunteers will need to check/update their language's ts file before releasing the plugin.
+
+PySide6
+
+`/usr/lib/qt6/bin/lupdate -tr-function-alias translate=_t *.py -ts ./translations/template.ts`
