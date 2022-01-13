@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="pl" sourcelanguage="en">
+<!DOCTYPE TS>
+<TS version="2.1" language="pl" sourcelanguage="en">
 <context>
     <name>ConfigDialog</name>
     <message>
@@ -8,27 +9,27 @@
         <translation>Dostosuj wtyczkę Tag Mechanic</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="194"/>
+        <location filename="../dialogs.py" line="195"/>
         <source>Comma separated list of html elements (no quotes, no angle &quot;&amp;lt;&quot; brackets).</source>
         <translation>Oddzielona przecinkami lista elementów HTML(bez cudzysłowów, bez nawiasów &quot;&amp;lt;&quot;).</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="202"/>
+        <location filename="../dialogs.py" line="203"/>
         <source>Choices to change</source>
         <translation>Możliwa zmiana elementu</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="202"/>
+        <location filename="../dialogs.py" line="204"/>
         <source>elements to:</source>
         <translation>na:</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="220"/>
+        <location filename="../dialogs.py" line="221"/>
         <source>HTML attributes available to search for:</source>
         <translation>Atrybuty HTML dostępne do wyszukiwania:</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="224"/>
+        <location filename="../dialogs.py" line="225"/>
         <source>Comma separated list of html attribute names (no quotes).</source>
         <translation>Oddzielona przecinkami lista atrybutów HTML (bez cudzysłowów).</translation>
     </message>
@@ -43,7 +44,7 @@
         <translation>Zresetuj wszystkie ustawienia do wartości domyślnych.</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="257"/>
+        <location filename="../dialogs.py" line="258"/>
         <source>Are you sure?</source>
         <translation>Jesteś pewny?</translation>
     </message>
@@ -56,22 +57,22 @@
 <context>
     <name>guiMain</name>
     <message>
-        <location filename="../dialogs.py" line="289"/>
+        <location filename="../dialogs.py" line="290"/>
         <source>Delete</source>
         <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="290"/>
+        <location filename="../dialogs.py" line="291"/>
         <source>Modify</source>
         <translation>Modyfikuj</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="291"/>
+        <location filename="../dialogs.py" line="292"/>
         <source>No attributes (naked tag)</source>
         <translation>Bez atrybutów („goły” znacznik)</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="292"/>
+        <location filename="../dialogs.py" line="293"/>
         <source>No change</source>
         <translation>Nie zmieniaj</translation>
     </message>
@@ -161,17 +162,18 @@
         <translation>Wyjdź bez dokonywania zmian</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="483"/>
+        <location filename="../dialogs.py" line="470"/>
+        <location filename="../dialogs.py" line="484"/>
         <source>Error</source>
         <translation>Błąd</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="470"/>
+        <location filename="../dialogs.py" line="471"/>
         <source>Must enter a value for the attribute selected</source>
         <translation>Musisz podać wartość dla wybranego atrybutu</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="484"/>
+        <location filename="../dialogs.py" line="485"/>
         <source>What--exactly--would that achieve?</source>
         <translation>Co dokładnie chcesz osiągnąć?</translation>
     </message>
@@ -181,22 +183,22 @@
         <translation>Rozpoczynam</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="521"/>
+        <location filename="../dialogs.py" line="522"/>
         <source>Error parsing</source>
         <translation>Błąd parsowania</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="521"/>
+        <location filename="../dialogs.py" line="522"/>
         <source>File skipped</source>
         <translation>Plik ominięto</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="530"/>
+        <location filename="../dialogs.py" line="531"/>
         <source>Occurrences found/changed in</source>
         <translation>Znalezienia w</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="533"/>
+        <location filename="../dialogs.py" line="534"/>
         <source>Criteria not found in</source>
         <translation>Brak znalezień w</translation>
     </message>
@@ -211,12 +213,12 @@
         <translation>Zatwierdź wszystkie zmiany i wyjdź</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="542"/>
+        <location filename="../dialogs.py" line="543"/>
         <source>Total occurrences found/changed</source>
         <translation>W sumie znalezień</translation>
     </message>
     <message>
-        <location filename="../dialogs.py" line="545"/>
+        <location filename="../dialogs.py" line="546"/>
         <source>No changes made to book</source>
         <translation>Nie dokonano żadnych zmian w książce</translation>
     </message>

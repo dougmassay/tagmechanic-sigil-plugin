@@ -9,21 +9,22 @@ import sys
 import math
 
 from utilities import UpdateChecker, taglist, tuple_version, combobox_defaults, remove_dupes, ismacos, iswindows
+from compat import match_sigil_highdpi, match_sigil_font, match_sigil_palette, disable_whats_this
 from parsing_engine import MarkupParser
 
 try:
-    from PySide2.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTimer, QTranslator, qVersion
-    from PySide2.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
-    from PySide2.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
-    from PySide2.QtWidgets import QStyleFactory, QTextEdit, QVBoxLayout, QWidget
-    from PySide2.QtGui import QColor, QFont, QIcon, QPalette
-    print('Pyside2')
+    from PySide6.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTranslator
+    from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
+    from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
+    from PySide6.QtWidgets import QTextEdit, QVBoxLayout, QWidget
+    from PySide6.QtGui import QIcon, QAction
+    print('Pyside6')
 except ImportError:
-    from PyQt5.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTimer, QTranslator, qVersion
+    from PyQt5.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTranslator
     from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
-    from PyQt5.QtWidgets import QStyleFactory, QTextEdit, QVBoxLayout, QWidget
-    from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
+    from PyQt5.QtWidgets import QTextEdit, QVBoxLayout, QWidget
+    from PyQt5.QtGui import QIcon
     print('PyQt5')
 
 BAIL_OUT = False
@@ -32,31 +33,18 @@ _t = QCoreApplication.translate
 
 
 def launch_gui(bk, prefs):
-    if not ismacos:
-        try:
-            setup_highdpi(bk._w.highdpi)
-        except Exception:
-            pass
-    try:
-        setup_ui_font(bk._w.uifont)
-    except Exception:
-        pass
-    if not ismacos and not iswindows:
-        # Qt 5.10.1 on Linux resets the global font on first event loop tick.
-        # So workaround it by setting the font once again in a timer.
-        try:
-            QTimer.singleShot(0, lambda : setup_ui_font(bk._w.uifont))
-        except Exception:
-            pass
+
+    match_sigil_highdpi(bk._w.highdpi)
+    match_sigil_font(bk._w.uifont)
+    
     app = QApplication([])
     icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
     app.setWindowIcon(QIcon(icon))
 
-    if tuple_version(qVersion()) >= (5, 10, 0):
-        app.setAttribute(Qt.AA_DisableWindowContextHelpButton)
+    disable_whats_this(app)
 
     # Make plugin match Sigil's light/dark theme
-    dark_palette(bk, app)
+    match_sigil_palette(bk, app)
 
     print('Application dir: {}'.format(QCoreApplication.applicationDirPath()))
     # Install qtbase translator for standard dialogs and such.
@@ -102,56 +90,6 @@ def getQtTranslationsPath(sigil_path):
     else:
         return QLibraryInfo.location(QLibraryInfo.TranslationsPath)
 
-def dark_palette(bk, app):
-    if not (bk.launcher_version() >= 20200117):
-        return
-    if bk.colorMode() != "dark":
-        return
-
-    p = QPalette()
-    sigil_colors = bk.color
-    dark_color = QColor(sigil_colors("Window"))
-    disabled_color = QColor(127,127,127)
-    dark_link_color = QColor(108, 180, 238)
-    text_color = QColor(sigil_colors("Text"))
-    p.setColor(p.Window, dark_color)
-    p.setColor(p.WindowText, text_color)
-    p.setColor(p.Base, QColor(sigil_colors("Base")))
-    p.setColor(p.AlternateBase, dark_color)
-    p.setColor(p.ToolTipBase, dark_color)
-    p.setColor(p.ToolTipText, text_color)
-    p.setColor(p.Text, text_color)
-    p.setColor(p.Disabled, p.Text, disabled_color)
-    p.setColor(p.Button, dark_color)
-    p.setColor(p.ButtonText, text_color)
-    p.setColor(p.Disabled, p.ButtonText, disabled_color)
-    p.setColor(p.BrightText, Qt.red)
-    p.setColor(p.Link, dark_link_color)
-    p.setColor(p.Highlight, QColor(sigil_colors("Highlight")))
-    p.setColor(p.HighlightedText, QColor(sigil_colors("HighlightedText")))
-    p.setColor(p.Disabled, p.HighlightedText, disabled_color)
-
-    app.setStyle(QStyleFactory.create("Fusion"))
-    app.setPalette(p)
-
-def setup_highdpi(highdpi):
-    has_env_setting = False
-    env_vars = ('QT_AUTO_SCREEN_SCALE_FACTOR', 'QT_SCALE_FACTOR', 'QT_SCREEN_SCALE_FACTORS', 'QT_DEVICE_PIXEL_RATIO')
-    for v in env_vars:
-        if os.environ.get(v):
-            has_env_setting = True
-            break
-    if highdpi == 'on' or (highdpi == 'detect' and not has_env_setting):
-        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    elif highdpi == 'off':
-        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
-        for p in env_vars:
-            os.environ.pop(p, None)
-
-def setup_ui_font(font_str):
-    font = QFont()
-    font.fromString(font_str)
-    QApplication.setFont(font)
 
 class ConfigDialog(QDialog):
     def __init__(self, parent, combobox_values):
