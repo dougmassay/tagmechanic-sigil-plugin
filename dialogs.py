@@ -8,19 +8,21 @@ import os
 import sys
 import math
 
-from utilities import UpdateChecker, taglist, tuple_version, combobox_defaults, remove_dupes, ismacos, iswindows
-from compat import match_sigil_highdpi, match_sigil_font, match_sigil_palette, disable_whats_this
+from utilities import UpdateChecker, taglist, tuple_version, combobox_defaults, remove_dupes
+from compat import match_sigil_highdpi, match_sigil_font, match_sigil_darkmode
+from compat import disable_whats_this, ismacos, iswindows, loadUi
+from compat import load_base_qt_translations, load_plugin_translations
 from parsing_engine import MarkupParser
 
 try:
-    from PySide6.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTranslator
+    from PySide6.QtCore import Qt, QByteArray, QCoreApplication
     from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PySide6.QtWidgets import QTextEdit, QVBoxLayout, QWidget
     from PySide6.QtGui import QIcon, QAction
     print('Pyside6')
 except ImportError:
-    from PyQt5.QtCore import Qt, QByteArray, QCoreApplication, QLibraryInfo, QTranslator
+    from PyQt5.QtCore import Qt, QByteArray, QCoreApplication
     from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PyQt5.QtWidgets import QTextEdit, QVBoxLayout, QWidget
@@ -29,13 +31,14 @@ except ImportError:
 
 BAIL_OUT = False
 PROCESSED = False
+DEBUG = 0
 _t = QCoreApplication.translate
 
 
 def launch_gui(bk, prefs):
 
-    match_sigil_highdpi(bk._w.highdpi)
-    match_sigil_font(bk._w.uifont)
+    match_sigil_highdpi(bk)
+    match_sigil_font(bk)
     
     app = QApplication([])
     icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
@@ -44,51 +47,23 @@ def launch_gui(bk, prefs):
     disable_whats_this(app)
 
     # Make plugin match Sigil's light/dark theme
-    match_sigil_palette(bk, app)
+    match_sigil_darkmode(bk, app)
 
-    print('Application dir: {}'.format(QCoreApplication.applicationDirPath()))
-    # Install qtbase translator for standard dialogs and such.
-    # Use the Sigil language setting unless manually overridden.
-    qt_translator = QTranslator()
-    misc_prefs = prefs['miscellaneous_settings']
-    if misc_prefs['language_override'] is not None:
-        print('Plugin preferences language override in effect')
-        qmf = 'qtbase_{}'.format(misc_prefs['language_override'])
-    else:
-        qmf = 'qtbase_{}'.format(bk.sigil_ui_lang)
-    # Get bundled or external translations directory
-    qt_trans_dir = getQtTranslationsPath(bk._w.appdir)
-    print('Qt translation dir: {}'.format(qt_trans_dir))
-    print('Looking for {} in {}'.format(qmf, qt_trans_dir))
-    qt_translator.load(qmf, qt_trans_dir)
-    print('Qt Base Translator succesfully installed: {}'.format(app.installTranslator(qt_translator)))
+    qttrans = load_base_qt_translations(bk, language_override = None)
+    res = app.installTranslator(qttrans)
+    if DEBUG:
+        print('Qt Base Translator succesfully installed: {}'.format(res))
 
-    # Install translator for the tagmechanic plugin dialog.
-    # Use the Sigil language setting unless manually overridden.
-    plugin_translator = QTranslator()
-    if misc_prefs['language_override'] is not None:
-        print('Plugin preferences language override in effect')
-        qmf = '{}_{}'.format(bk._w.plugin_name.lower(), misc_prefs['language_override'])
-    else:
-        qmf = '{}_{}'.format(bk._w.plugin_name.lower(), bk.sigil_ui_lang)
-    print('Looking for {} in {}'.format(qmf, os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'translations')))
-    plugin_translator.load(qmf, os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'translations'))
-    print('Plugin Translator succesfully installed: {}'.format(app.installTranslator(plugin_translator)))
+    # Assumes that binary qm files similar <plugin_name>_es.qm
+    # are present in a folder named 'translations'.
+    plugintrans = load_plugin_translations(bk, language_override = None)
+    res = app.installTranslator(plugintrans)
+    if DEBUG:
+        print('Plugin Translator succesfully installed: {}'.format(res))
 
     win = guiMain(bk, prefs)
-    app.exec_()
+    app.exec()
     return win.getAbort()
-
-def getQtTranslationsPath(sigil_path):
-    isBundled = 'sigil' in sys.prefix.lower()
-    print('Python is Bundled: {}'.format(isBundled))
-    if isBundled:
-        if sys.platform.lower().startswith('darwin'):
-            return os.path.normpath(sigil_path + '/../translations')
-        else:
-            return os.path.join(sigil_path, 'translations')
-    else:
-        return QLibraryInfo.location(QLibraryInfo.TranslationsPath)
 
 
 class ConfigDialog(QDialog):

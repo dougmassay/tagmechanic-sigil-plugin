@@ -35,6 +35,7 @@ miscellaneous_settings = {
     'windowGeometry' : None,
     'language_override': None,
     'icon_color': '#27AAE1',
+    'qtwrapper_override': None,
 }
 
 update_settings = {
