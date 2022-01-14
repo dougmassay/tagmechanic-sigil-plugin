@@ -59,7 +59,8 @@ def launch_gui(bk, prefs):
     match_sigil_darkmode(bk, app)  # or fail gracefully
 
     # Load Qt Base translations, if found, for Sigil's language
-    qttrans = load_base_qt_translations(bk, language_override=None)
+    lang_override = prefs['miscellaneous_settings']['language_override']
+    qttrans = load_base_qt_translations(bk, language_override=lang_override)
     res = app.installTranslator(qttrans)
     if DEBUG:
         print('Qt Base Translator succesfully installed: {}'.format(res))
@@ -67,7 +68,7 @@ def launch_gui(bk, prefs):
     # Load plugin translations, if found, for Sigil's language
     # Folder where binary '<plugin_name>_pl.qm' are found
     transfolder = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'translations')
-    plugintrans = load_plugin_translations(bk, transfolder, language_override=None)
+    plugintrans = load_plugin_translations(bk, transfolder, language_override=lang_override)
     res = app.installTranslator(plugintrans)
     if DEBUG:
         print('Plugin Translator succesfully installed: {}'.format(res))
