@@ -6,7 +6,7 @@ import os
 import sys
 
 try:
-    from PySide6.QtCore import Qt, QTimer, qVersion, Slot, QMetaObject, QDir
+    from PySide6.QtCore import Qt, QTimer, qVersion, QMetaObject, QDir
     from PySide6.QtCore import QLibraryInfo, QTranslator
     from PySide6.QtWidgets import QApplication, QStyleFactory
     from PySide6.QtGui import QColor, QFont, QPalette
@@ -69,7 +69,7 @@ def match_sigil_font(bk):
     # in both Qt5 and Qt6.
     if not (bk.launcher_version() >= 20200326):  # Sigil 1.2.0
         return
-    if DEBUG: 
+    if DEBUG:
         print(bk._w.uifont)
     lst = bk._w.uifont.split(',')
     try:
@@ -204,7 +204,7 @@ if 'PySide6' in sys.modules:
                     try:
                         widget = self.customWidgets[class_name](parent)
 
-                    except (TypeError, KeyError) as e:
+                    except (TypeError, KeyError) as e:  # noqa
                         raise Exception('No custom widget ' + class_name + ' found in customWidgets param of UiLoader __init__.')
 
                 if self.baseinstance:
@@ -222,7 +222,7 @@ if 'PySide6' in sys.modules:
         # If the .ui file references icons or other resources it may
         # not find them unless the cwd is defined. If this compat library
         # is in the same directory as the calling script, things should work.
-        # If it's in another directory, however, you may need to set the 
+        # If it's in another directory, however, you may need to set the
         # PYSIDE_LOADUI_CWD environment variable to the resource's directory first.
         # Best practice is not to define icons in the .ui file. Do it at the app level.
         if os.environ('PYSIDE_LOADUI_CWD') is not None:

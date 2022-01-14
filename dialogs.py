@@ -8,9 +8,10 @@ import os
 import sys
 import math
 
-from utilities import UpdateChecker, taglist, tuple_version, combobox_defaults, remove_dupes
+from utilities import UpdateChecker, taglist, combobox_defaults, remove_dupes
 from compat import match_sigil_highdpi, match_sigil_font, match_sigil_darkmode
-from compat import disable_whats_this, ismacos, iswindows, loadUi
+from compat import disable_whats_this, loadUi
+from compat import loadUi  # noqa
 from compat import load_base_qt_translations, load_plugin_translations
 from parsing_engine import MarkupParser
 
@@ -39,7 +40,7 @@ def launch_gui(bk, prefs):
 
     match_sigil_highdpi(bk)
     match_sigil_font(bk)
-    
+
     app = QApplication([])
     icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
     app.setWindowIcon(QIcon(icon))
@@ -49,14 +50,14 @@ def launch_gui(bk, prefs):
     # Make plugin match Sigil's light/dark theme
     match_sigil_darkmode(bk, app)
 
-    qttrans = load_base_qt_translations(bk, language_override = None)
+    qttrans = load_base_qt_translations(bk, language_override=None)
     res = app.installTranslator(qttrans)
     if DEBUG:
         print('Qt Base Translator succesfully installed: {}'.format(res))
 
     # Assumes that binary qm files similar <plugin_name>_es.qm
     # are present in a folder named 'translations'.
-    plugintrans = load_plugin_translations(bk, language_override = None)
+    plugintrans = load_plugin_translations(bk, language_override=None)
     res = app.installTranslator(plugintrans)
     if DEBUG:
         print('Plugin Translator succesfully installed: {}'.format(res))
