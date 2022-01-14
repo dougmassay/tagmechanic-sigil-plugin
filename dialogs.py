@@ -29,7 +29,7 @@ except ImportError:
     from PyQt5.QtWidgets import QTextEdit, QVBoxLayout, QWidget
     from PyQt5.QtGui import QIcon
 
-DEBUG = 1
+DEBUG = 0
 if DEBUG:
     if 'PySide6' in sys.modules:
         print('Plugin using PySide6')

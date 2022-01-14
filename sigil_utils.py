@@ -23,7 +23,7 @@ except ImportError:
 
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
-DEBUG = 1
+DEBUG = 0
 if DEBUG:
     if 'PySide6' in sys.modules:
         print('sigil_utilities using PySide6')
