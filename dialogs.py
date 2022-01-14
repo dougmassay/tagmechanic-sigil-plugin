@@ -9,23 +9,21 @@ import sys
 import math
 
 from sigil_utils import match_sigil_highdpi, match_sigil_font, match_sigil_darkmode
-from sigil_utils import disable_whats_this, loadUi
-from sigil_utils import load_base_qt_translations, load_plugin_translations
-# from sigil_utils import loadUi  # noqa
+from sigil_utils import disable_whats_this, load_base_qt_translations, load_plugin_translations
+# from sigil_utils import Signal, Slot
+# from sigil_utils import loadUi
 
 from utilities import UpdateChecker, taglist, combobox_defaults, remove_dupes
 from parsing_engine import MarkupParser
 
 try:
     from PySide6.QtCore import Qt, QByteArray, QCoreApplication
-    # from PySide6.QtCore import Signal, Slot
     from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PySide6.QtWidgets import QTextEdit, QVBoxLayout, QWidget
     from PySide6.QtGui import QIcon, QAction
 except ImportError:
     from PyQt5.QtCore import Qt, QByteArray, QCoreApplication
-    # from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot
     from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PyQt5.QtWidgets import QTextEdit, QVBoxLayout, QWidget
