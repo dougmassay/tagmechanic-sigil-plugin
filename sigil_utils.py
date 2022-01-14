@@ -4,6 +4,7 @@
 
 import os
 import sys
+import inspect
 
 try:
     from PySide6.QtCore import Qt, QTimer, qVersion, QMetaObject, QDir
@@ -18,7 +19,15 @@ except ImportError:
     from PyQt5 import uic
 
 
-DEBUG = 0
+SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+DEBUG = 1
+if DEBUG:
+    if 'PySide6' in sys.modules:
+        print('sigil_utilities using PySide6')
+    else:
+        print('sigil_utilities using PyQt5')
+
 
 _plat = sys.platform.lower()
 iswindows = 'win32' in _plat or 'win64' in _plat
@@ -44,13 +53,13 @@ def setup_highdpi(highdpi):
         for p in env_vars:
             os.environ.pop(p, None)
 
+# Match Sigil's highdpi setting if necessary/possible
 def match_sigil_highdpi(bk):
     if not (bk.launcher_version() >= 20200326):  # Sigil 1.2.0
         return
     # macos handles highdpi in both Qt5 and Qt6
     if not ismacos:
-        # Linux and Windows don't need to do anything
-        # to enable highdpi after Qt6
+        # Linux and Windows don't need to do anything to enable highdpi after Qt6
         if tuple_version(qVersion()) < (6, 0, 0):
             try:
                 setup_highdpi(bk._w.highdpi)
@@ -63,8 +72,9 @@ def setup_ui_font(font_str):
     font.fromString(font_str)
     QApplication.setFont(font)
 
+# Match Sigil's UI font settings if possible
 def match_sigil_font(bk):
-    # QFont::toString produces slightly different results in Qt5 vs
+    # QFont::toString produces slightly different results with Qt5 vs
     # Qt6. Produce a string that will work with QFont::fromString
     # in both Qt5 and Qt6.
     if not (bk.launcher_version() >= 20200326):  # Sigil 1.2.0
@@ -90,6 +100,7 @@ def match_sigil_font(bk):
             pass
 
 
+# Match Sigil's dark theme if possible
 def match_sigil_darkmode(bk, app):
     if not (bk.launcher_version() >= 20200117):
         return
@@ -123,11 +134,13 @@ def match_sigil_darkmode(bk, app):
     app.setPalette(p)
 
 
+# Disable '?' window box buttons if necessary
 def disable_whats_this(app):
     if tuple_version(qVersion()) >= (5, 10, 0) and tuple_version(qVersion()) < (5, 15, 0):
         app.setAttribute(Qt.AA_DisableWindowContextHelpButton)
 
 
+# Find the location of Qt's base translations
 def get_qt_translations_path(sigil_path):
     isBundled = 'sigil' in sys.prefix.lower()
     if DEBUG:
@@ -140,10 +153,9 @@ def get_qt_translations_path(sigil_path):
     else:
         return QLibraryInfo.location(QLibraryInfo.TranslationsPath)
 
+# Install qtbase translator for standard dialogs and such.
+# Use the Sigil language setting unless manually overridden.
 def load_base_qt_translations(bk, language_override=None):
-    # print(f'Application dir: {bk._w.appdir}')
-    # Install qtbase translator for standard dialogs and such.
-    # Use the Sigil language setting unless manually overridden.
     if not (bk.launcher_version() >= 20170227):  # Sigil 0.9.8
         return
     qt_translator = QTranslator()
@@ -162,9 +174,10 @@ def load_base_qt_translations(bk, language_override=None):
     return qt_translator
 
 
-def load_plugin_translations(bk, language_override=None):
-    # Install translator for the specified plugin dialog.
-    # Use the Sigil language setting unless manually overridden.
+# Install translator for the specified plugin dialog.
+# Use the Sigil language setting unless manually overridden.
+# 'folder' parameter is where the binary <plugin_name>_??.qm files are.
+def load_plugin_translations(bk, folder, language_override=None):
     if not (bk.launcher_version() >= 20170227):  # Sigil 0.9.8
         return
     plugin_translator = QTranslator()
@@ -175,11 +188,13 @@ def load_plugin_translations(bk, language_override=None):
     else:
         qmf = '{}_{}'.format(bk._w.plugin_name.lower(), bk.sigil_ui_lang)
     if DEBUG:
-        print('Looking for {} in {}'.format(qmf, os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'translations')))
-    plugin_translator.load(qmf, os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'translations'))
+        print('Looking for {} in {}'.format(qmf, folder))
+    plugin_translator.load(qmf, folder)
     return plugin_translator
 
 
+# Mimic the behavior of PyQt5.uic.loadUi() in PySide6
+# so the same code can be used for PyQt5/PySide6.
 if 'PySide6' in sys.modules:
     class UiLoader(QUiLoader):
         def __init__(self, baseinstance, customWidgets=None):
@@ -204,7 +219,7 @@ if 'PySide6' in sys.modules:
                     try:
                         widget = self.customWidgets[class_name](parent)
 
-                    except (TypeError, KeyError) as e:  # noqa
+                    except (TypeError, KeyError):
                         raise Exception('No custom widget ' + class_name + ' found in customWidgets param of UiLoader __init__.')
 
                 if self.baseinstance:
@@ -233,5 +248,7 @@ if 'PySide6' in sys.modules:
         widget = loader.load(uifile)
         QMetaObject.connectSlotsByName(widget)
         return widget
+
+# Otherwise return the standard PyQt5 loadUi object
 else:
     loadUi = uic.loadUi

@@ -12,9 +12,6 @@ import socket
 from datetime import datetime, timedelta
 from lxml import objectify
 
-_plat = sys.platform.lower()
-iswindows = 'win32' in _plat or 'win64' in _plat
-ismacos = isosx = 'darwin' in _plat
 
 url = 'https://raw.githubusercontent.com/dougmassay/tagmechanic-sigil-plugin/master/checkversion.xml'
 delta = 12

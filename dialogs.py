@@ -8,61 +8,72 @@ import os
 import sys
 import math
 
+from sigil_utils import match_sigil_highdpi, match_sigil_font, match_sigil_darkmode
+from sigil_utils import disable_whats_this, loadUi
+from sigil_utils import load_base_qt_translations, load_plugin_translations
+# from sigil_utils import loadUi  # noqa
+
 from utilities import UpdateChecker, taglist, combobox_defaults, remove_dupes
-from compat import match_sigil_highdpi, match_sigil_font, match_sigil_darkmode
-from compat import disable_whats_this, loadUi
-from compat import loadUi  # noqa
-from compat import load_base_qt_translations, load_plugin_translations
 from parsing_engine import MarkupParser
 
 try:
     from PySide6.QtCore import Qt, QByteArray, QCoreApplication
+    # from PySide6.QtCore import Signal, Slot
     from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PySide6.QtWidgets import QTextEdit, QVBoxLayout, QWidget
     from PySide6.QtGui import QIcon, QAction
-    print('Pyside6')
 except ImportError:
     from PyQt5.QtCore import Qt, QByteArray, QCoreApplication
+    # from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot
     from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PyQt5.QtWidgets import QTextEdit, QVBoxLayout, QWidget
     from PyQt5.QtGui import QIcon
-    print('PyQt5')
+
+DEBUG = 1
+if DEBUG:
+    if 'PySide6' in sys.modules:
+        print('Plugin using PySide6')
+    else:
+        print('Plugin using PyQt5')
 
 BAIL_OUT = False
 PROCESSED = False
-DEBUG = 0
+
+# Function alias used to surround translatable strings
 _t = QCoreApplication.translate
 
 
 def launch_gui(bk, prefs):
 
-    match_sigil_highdpi(bk)
-    match_sigil_font(bk)
+    match_sigil_highdpi(bk)  # or fail gracefully
+    match_sigil_font(bk)    # or fail gracefully
 
     app = QApplication([])
     icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
     app.setWindowIcon(QIcon(icon))
 
-    disable_whats_this(app)
+    disable_whats_this(app)  # or fail gracefully
 
-    # Make plugin match Sigil's light/dark theme
-    match_sigil_darkmode(bk, app)
+    match_sigil_darkmode(bk, app)  # or fail gracefully
 
+    # Load Qt Base translations, if found, for Sigil's language
     qttrans = load_base_qt_translations(bk, language_override=None)
     res = app.installTranslator(qttrans)
     if DEBUG:
         print('Qt Base Translator succesfully installed: {}'.format(res))
 
-    # Assumes that binary qm files similar <plugin_name>_es.qm
-    # are present in a folder named 'translations'.
-    plugintrans = load_plugin_translations(bk, language_override=None)
+    # Load plugin translations, if found, for Sigil's language
+    # Folder where binary '<plugin_name>_pl.qm' are found
+    transfolder = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'translations')
+    plugintrans = load_plugin_translations(bk, transfolder, language_override=None)
     res = app.installTranslator(plugintrans)
     if DEBUG:
         print('Plugin Translator succesfully installed: {}'.format(res))
 
     win = guiMain(bk, prefs)
+    # Use exec() and not exec_() for PyQt5/PySide6 compliance
     app.exec()
     return win.getAbort()
 
