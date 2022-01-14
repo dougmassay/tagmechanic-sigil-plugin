@@ -15,7 +15,7 @@ try:
     from PySide6.QtUiTools import QUiLoader
 except ImportError:
     from PyQt5.QtCore import Qt, QTimer, qVersion, QLibraryInfo, QTranslator
-    from PyQt.QtCore import pyqtSignal as Signal, pyqtSlot as Slot  # noqa
+    from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot  # noqa
     from PyQt5.QtWidgets import QApplication, QStyleFactory
     from PyQt5.QtGui import QColor, QFont, QPalette
     from PyQt5 import uic
