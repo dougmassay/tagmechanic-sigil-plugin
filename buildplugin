@@ -25,7 +25,7 @@ PLUGIN_FILES = ['dialogs.py',
             'parsing_engine.py',
             'plugin.py',
             'plugin.xml',
-            'sigil_utils.py',
+            'plugin_utils.py',
             'utilities.py',
             'plugin.svg',
             'plugin.png',]

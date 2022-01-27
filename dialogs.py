@@ -8,8 +8,7 @@ import os
 import sys
 import math
 
-from sigil_utils import match_sigil_highdpi, match_sigil_font, match_sigil_darkmode
-from sigil_utils import disable_whats_this, load_base_qt_translations, load_plugin_translations
+from plugin_utils import Application
 # from sigil_utils import Signal, Slot
 # from sigil_utils import loadUi
 
@@ -45,31 +44,8 @@ _t = QCoreApplication.translate
 
 def launch_gui(bk, prefs):
 
-    match_sigil_highdpi(bk)  # or fail gracefully
-    match_sigil_font(bk)    # or fail gracefully
-
-    app = QApplication([])
     icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
-    app.setWindowIcon(QIcon(icon))
-
-    disable_whats_this(app)  # or fail gracefully
-
-    match_sigil_darkmode(bk, app)  # or fail gracefully
-
-    # Load Qt Base translations, if found, for Sigil's language
-    lang_override = prefs['miscellaneous_settings']['language_override']
-    qttrans = load_base_qt_translations(bk, language_override=lang_override)
-    res = app.installTranslator(qttrans)
-    if DEBUG:
-        print('Qt Base Translator succesfully installed: {}'.format(res))
-
-    # Load plugin translations, if found, for Sigil's language
-    # Folder where binary '<plugin_name>_pl.qm' are found
-    transfolder = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'translations')
-    plugintrans = load_plugin_translations(bk, transfolder, language_override=lang_override)
-    res = app.installTranslator(plugintrans)
-    if DEBUG:
-        print('Plugin Translator succesfully installed: {}'.format(res))
+    app = Application(sys.argv, bk, app_icon=QIcon(icon))
 
     win = guiMain(bk, prefs)
     # Use exec() and not exec_() for PyQt5/PySide6 compliance
@@ -79,7 +55,7 @@ def launch_gui(bk, prefs):
 
 class ConfigDialog(QDialog):
     def __init__(self, parent, combobox_values):
-        super().__init__()
+        super(ConfigDialog, self).__init__()
         self.gui = parent
         self.combobox_values = combobox_values
         self.qlinedit_widgets = {}
@@ -491,7 +467,7 @@ class guiMain(QMainWindow):
     def showConfig(self):
         ''' Launch Customization Dialog '''
         dlg = ConfigDialog(self, self.combobox_values)
-        if dlg.exec_() == QDialog.Accepted:
+        if dlg.exec() == QDialog.Accepted:
             self.refresh_attr_values()
             self.update_gui()
 
