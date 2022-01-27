@@ -200,7 +200,7 @@ class Application(QApplication):
         font.fromString(','.join(font_lst))
 
         if PLUGIN_QT_MAJOR_VERSION >= 6 and SIGIL_QT_MAJOR_VERSION < 6:
-           font.setWeight(convertWeights(int(font_lst[4]), shift=True))
+            font.setWeight(convertWeights(int(font_lst[4]), shift=True))
         if PLUGIN_QT_MAJOR_VERSION < 6 and SIGIL_QT_MAJOR_VERSION >= 6:
             font.setWeight(convertWeights(int(font_lst[4]), inverted=True))
 
