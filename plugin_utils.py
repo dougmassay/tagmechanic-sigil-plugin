@@ -108,7 +108,7 @@ class Application(QApplication):
         self.sigil_qt_version = (6, 2, 2)
         program_name = 'sigil_plugin_{}'.format(bk._w.plugin_name.lower())
         if plugin_trans_folder is None:
-            plugin_trans_folder = os.path.join(self.bk._w.plugin_dir, 'translations')
+            plugin_trans_folder = os.path.join(self.bk._w.plugin_dir, self.bk._w.plugin_name, 'translations')
 
         if tuple_version(qVersion()) < (6, 0, 0):
             self.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
@@ -241,7 +241,7 @@ class Application(QApplication):
     def load_base_qt_translations(self):
         if not (self.bk.launcher_version() >= 20170227):  # Sigil 0.9.8
             return
-        qt_translator = QTranslator()
+        qt_translator = QTranslator(self.instance())
         language_override = os.environ.get("SIGIL_PLUGIN_LANGUAGE_OVERRIDE")
         if language_override is not None:
             if DEBUG:
@@ -255,7 +255,7 @@ class Application(QApplication):
             print('Qt translation dir: {}'.format(qt_trans_dir))
             print('Looking for {} in {}'.format(qmf, qt_trans_dir))
         qt_translator.load(qmf, qt_trans_dir)
-        res = self.installTranslator(qt_translator)
+        res = self.instance().installTranslator(qt_translator)
         if DEBUG:
             print('Qt Base Translator succesfully installed: {}'.format(res))
 
@@ -264,7 +264,7 @@ class Application(QApplication):
     def load_plugin_translations(self, trans_folder):
         if not (self.bk.launcher_version() >= 20170227):  # Sigil 0.9.8
             return
-        plugin_translator = QTranslator()
+        plugin_translator = QTranslator(self.instance())
         language_override = os.environ.get("SIGIL_PLUGIN_LANGUAGE_OVERRIDE")
         if language_override is not None:
             if DEBUG:
@@ -278,7 +278,7 @@ class Application(QApplication):
         if DEBUG:
             print('Looking for {} in {}'.format(qmf, trans_folder))
         plugin_translator.load(qmf, trans_folder)
-        res = self.installTranslator(plugin_translator)
+        res = self.instance().installTranslator(plugin_translator)
         if DEBUG:
             print('Plugin Translator succesfully installed: {}'.format(res))
 
