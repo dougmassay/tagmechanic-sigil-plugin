@@ -58,6 +58,7 @@ if DEBUG:
         print('plugin_utilities is using PySide6')
     else:
         print('plugin_utilities using PyQt5')
+    print('Sigil Qt: ', os.environ.get('SIGIL_QT_RUNTIME_VERSION'))
 
 
 _plat = sys.platform.lower()
@@ -127,7 +128,7 @@ def convertWeights(weight, inverted=False, shift=False):
 
 
 ''' Subclass of the QApplication object that includes a lot of
-    Sigil specific routines that plugin devs don't have to worry
+    Sigil specific routines that plugin devs won't have to worry
     about (unless they choose to, of course - hence the overrides)'''
 class Application(QApplication):
     def __init__(self, args, bk, app_icon=None, match_fonts=True,
