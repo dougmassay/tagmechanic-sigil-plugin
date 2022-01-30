@@ -2,9 +2,39 @@
 # -*- coding: utf-8 -*-
 # vim:ts=4:sw=4:softtabstop=4:smarttab:expandtab
 
+# Copyright (c) 2022 Doug Massay and Kevin B. Hendricks
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this list of
+# conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice, this list
+# of conditions and the following disclaimer in the documentation and/or other materials
+# provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+# SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+# TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+# WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 import os
 import sys
 import inspect
+
+
+SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+e = os.environ.get('SIGIL_QT_RUNTIME_VERSION', '5.10.0')
+SIGIL_QT_MAJOR_VERSION = tuple(map(int, (e.split("."))))[0]
+DEBUG = 0
+
 
 try:
     from PySide6.QtCore import Qt, QTimer, QMetaObject, QDir, qVersion
@@ -21,16 +51,13 @@ except ImportError:
     from PyQt5 import uic
 
 
-SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-SIGIL_QT_MAJOR_VERSION = tuple(map(int, (os.environ.get('SIGIL_QT_VERSION').split("."))))[0]
 PLUGIN_QT_MAJOR_VERSION = tuple(map(int, (qVersion().split("."))))[0]
 
-DEBUG = 1
 if DEBUG:
     if 'PySide6' in sys.modules:
-        print('sigil_utilities using PySide6')
+        print('plugin_utilities is using PySide6')
     else:
-        print('sigil_utilities using PyQt5')
+        print('plugin_utilities using PyQt5')
 
 
 _plat = sys.platform.lower()
@@ -38,6 +65,7 @@ iswindows = 'win32' in _plat or 'win64' in _plat
 ismacos = isosx = 'darwin' in _plat
 
 
+''' Return a tuple of a version string for easy comparison'''
 def tuple_version(v):
     # No alpha characters in version strings allowed here!
     return tuple(map(int, (v.split("."))))
@@ -98,6 +126,9 @@ def convertWeights(weight, inverted=False, shift=False):
     return result
 
 
+''' Subclass of the QApplication object that includes a lot of
+    Sigil specific routines that plugin devs don't have to worry
+    about (unless they choose to, of course - hence the overrides)'''
 class Application(QApplication):
     def __init__(self, args, bk, app_icon=None, match_fonts=True,
                 match_highdpi=True, match_dark_palette=True,
@@ -105,31 +136,43 @@ class Application(QApplication):
                 load_qtplugin_translations=True, plugin_trans_folder=None):
 
         self.bk = bk
-        self.sigil_qt_version = (6, 2, 2)
         program_name = 'sigil_plugin_{}'.format(bk._w.plugin_name.lower())
         if plugin_trans_folder is None:
             plugin_trans_folder = os.path.join(self.bk._w.plugin_dir, self.bk._w.plugin_name, 'translations')
 
+        # Match Sigil highdpi settings if necessary and if available
         if tuple_version(qVersion()) < (6, 0, 0):
             self.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
         if match_highdpi:
             self.match_sigil_highdpi()
+
+        # Initialize the QApplication to be used by the plugin
         args = [program_name] + args[1:]
         QApplication.__init__(self, args)
+
+        # set the app icon (used by all child windows)
         if app_icon is not None:
             self.setWindowIcon(app_icon)
             if iswindows:
                 ensure_windows_taskbar_icon()
 
+        # Match Sigil's dark palette if possible and/or wanted
         if match_dark_palette:
             self.match_sigil_darkmode()
+
+        # Sigil disables the little unused question mark context button - so does Python
         if match_whats_this:
             if tuple_version(qVersion()) >= (5, 10, 0) and tuple_version(qVersion()) < (5, 15, 0):
                 self.setAttribute(Qt.ApplicationAttribute.AA_DisableWindowContextHelpButton)
+
+        # Load Qt base dialog translations if available
         if load_qtbase_translations:
             self.load_base_qt_translations()
+        # Load plugin dialog translations if available
         if load_qtplugin_translations:
             self.load_plugin_translations(plugin_trans_folder)
+
+        # Match Sigil UI font if possible and/or wanted
         if match_fonts:
             self.match_sigil_font()
 
@@ -147,9 +190,9 @@ class Application(QApplication):
             for p in env_vars:
                 os.environ.pop(p, None)
 
-    # Match Sigil's highdpi setting if necessary/possible
     def match_sigil_highdpi(self):
         if not (self.bk.launcher_version() >= 20200326):  # Sigil 1.2.0
+            print('Highdpi-matching not available before Sigil 1.2.0')
             return
         # macos handles highdpi in both Qt5 and Qt6
         if not ismacos:
@@ -160,9 +203,9 @@ class Application(QApplication):
                 except Exception:
                     pass
 
-    # Match Sigil's dark theme if possible
     def match_sigil_darkmode(self):
-        if not (self.bk.launcher_version() >= 20200117):
+        if not (self.bk.launcher_version() >= 20200117):  # Sigil 1.1.0
+            print('Dark palette matching not available before Sigil 1.1.0')
             return
         if self.bk.colorMode() != "dark":
             return
@@ -207,16 +250,16 @@ class Application(QApplication):
         if DEBUG:
             print(f'Font Weight: {font.weight()}')
 
-        QApplication.instance().setFont(font)
+        self.instance().setFont(font)
         if DEBUG:
             print(font.toString())
 
-    # Match Sigil's UI font settings if possible
     def match_sigil_font(self):
         # QFont::toString produces slightly different results with Qt5 vs
         # Qt6. Produce a string that will work with QFont::fromString
         # in both Qt5 and Qt6.
         if not (self.bk.launcher_version() >= 20200326):  # Sigil 1.2.0
+            print('UI font matching not available before Sigil 1.2.0')
             return
         if DEBUG:
             print(self.bk._w.uifont)
@@ -240,12 +283,13 @@ class Application(QApplication):
     # Use the Sigil language setting unless manually overridden.
     def load_base_qt_translations(self):
         if not (self.bk.launcher_version() >= 20170227):  # Sigil 0.9.8
+            print('Sigil language matching not available before Sigil 0.9.8')
             return
         qt_translator = QTranslator(self.instance())
         language_override = os.environ.get("SIGIL_PLUGIN_LANGUAGE_OVERRIDE")
         if language_override is not None:
             if DEBUG:
-                print('Plugin language override in effect')
+                print('Qt Base language override in effect')
             qmf = 'qtbase_{}'.format(language_override)
         else:
             qmf = 'qtbase_{}'.format(self.bk.sigil_ui_lang)
@@ -263,6 +307,7 @@ class Application(QApplication):
     # Use the Sigil language setting unless manually overridden.
     def load_plugin_translations(self, trans_folder):
         if not (self.bk.launcher_version() >= 20170227):  # Sigil 0.9.8
+            print('Sigil language matching not available before Sigil 0.9.8')
             return
         plugin_translator = QTranslator(self.instance())
         language_override = os.environ.get("SIGIL_PLUGIN_LANGUAGE_OVERRIDE")
