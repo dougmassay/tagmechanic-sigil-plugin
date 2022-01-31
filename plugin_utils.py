@@ -37,14 +37,14 @@ DEBUG = 0
 
 
 if SIGIL_QT_MAJOR_VERSION == 6:
-    from PySide6.QtCore import Qt, QTimer, QMetaObject, QDir, qVersion
+    from PySide6.QtCore import Qt, QCoreApplication, QTimer, QMetaObject, QDir, qVersion
     from PySide6.QtCore import QLibraryInfo, QTranslator
     from PySide6.QtCore import Signal, Slot  # noqa
     from PySide6.QtWidgets import QApplication, QStyleFactory
     from PySide6.QtGui import QColor, QFont, QIcon, QPalette
     from PySide6.QtUiTools import QUiLoader
 elif SIGIL_QT_MAJOR_VERSION == 5:
-    from PyQt5.QtCore import Qt, QTimer, QLibraryInfo, QTranslator, qVersion
+    from PyQt5.QtCore import Qt, QCoreApplication, QTimer, QLibraryInfo, QTranslator, qVersion
     from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot  # noqa
     from PyQt5.QtWidgets import QApplication, QStyleFactory
     from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
@@ -52,6 +52,9 @@ elif SIGIL_QT_MAJOR_VERSION == 5:
 
 
 PLUGIN_QT_MAJOR_VERSION = tuple(map(int, (qVersion().split("."))))[0]
+
+# Function alias used to surround translatable strings
+_t = QCoreApplication.translate
 
 if DEBUG:
     if 'PySide6' in sys.modules:
@@ -131,7 +134,7 @@ def convertWeights(weight, inverted=False, shift=False):
 ''' Subclass of the QApplication object that includes a lot of
     Sigil specific routines that plugin devs won't have to worry
     about (unless they choose to, of course - hence the overrides)'''
-class Application(QApplication):
+class PluginApplication(QApplication):
     def __init__(self, args, bk, app_icon=None, match_fonts=True,
                 match_highdpi=True, match_dark_palette=True,
                 match_whats_this=True, load_qtbase_translations=True,

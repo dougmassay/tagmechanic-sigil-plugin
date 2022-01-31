@@ -8,7 +8,7 @@ import os
 import sys
 import math
 
-from plugin_utils import Application, SIGIL_QT_MAJOR_VERSION
+from plugin_utils import PluginApplication, SIGIL_QT_MAJOR_VERSION, _t
 # from sigil_utils import Signal, Slot
 # from sigil_utils import loadUi
 
@@ -16,13 +16,13 @@ from utilities import UpdateChecker, taglist, combobox_defaults, remove_dupes
 from parsing_engine import MarkupParser
 
 if SIGIL_QT_MAJOR_VERSION == 6:
-    from PySide6.QtCore import Qt, QByteArray, QCoreApplication
+    from PySide6.QtCore import Qt, QByteArray
     from PySide6.QtWidgets import QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PySide6.QtWidgets import QTextEdit, QVBoxLayout, QWidget
     from PySide6.QtGui import QAction
 elif SIGIL_QT_MAJOR_VERSION == 5:
-    from PyQt5.QtCore import Qt, QByteArray, QCoreApplication
+    from PyQt5.QtCore import Qt, QByteArray
     from PyQt5.QtWidgets import QAction, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PyQt5.QtWidgets import QTextEdit, QVBoxLayout, QWidget
@@ -37,14 +37,11 @@ if DEBUG:
 BAIL_OUT = False
 PROCESSED = False
 
-# Function alias used to surround translatable strings
-_t = QCoreApplication.translate
-
 
 def launch_gui(bk, prefs):
 
     icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
-    app = Application(sys.argv, bk, app_icon=icon)
+    app = PluginApplication(sys.argv, bk, app_icon=icon)
 
     win = guiMain(bk, prefs)
     # Use exec() and not exec_() for PyQt5/PySide6 compliance
@@ -98,7 +95,7 @@ class ConfigDialog(QDialog):
                 curr_col += 1
                 curr_item = 1
             # Add lable and QLineEdit widget to current column.
-            label = QLabel('<b>{} "{}" {}</b>'.format(
+            label = QLabel('{} "{}" {}'.format(
                 _t('ConfigDialog', 'Choices to change'), tag,
                 _t('ConfigDialog', 'elements to:')), self)
             label.setAlignment(Qt.AlignCenter)
@@ -116,8 +113,7 @@ class ConfigDialog(QDialog):
         attrs_layout = QVBoxLayout()
         attrs_layout.setAlignment(Qt.AlignCenter)
         layout.addLayout(attrs_layout)
-        label = QLabel('<b>{}</b>'.format(
-            _t('ConfigDialog', 'HTML attributes available to search for:')), self)
+        label = QLabel(_t('ConfigDialog', 'HTML attributes available to search for:'), self)
         label.setAlignment(Qt.AlignCenter)
         self.attrs_txtBox = QLineEdit(', '.join(self.combobox_values['attrs']), self)
         self.attrs_txtBox.setToolTip('<p>{}'.format(
@@ -181,7 +177,7 @@ class guiMain(QMainWindow):
         self.setup_ui()
 
     def setup_ui(self):
-        app = QApplication.instance()
+        app = PluginApplication.instance()
         p = app.palette()
         link_color = p.color(p.Active, p.Link).name()
 
