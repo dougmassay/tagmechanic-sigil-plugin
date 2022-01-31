@@ -36,14 +36,14 @@ SIGIL_QT_MAJOR_VERSION = tuple(map(int, (e.split("."))))[0]
 DEBUG = 0
 
 
-try:
+if SIGIL_QT_MAJOR_VERSION == 6:
     from PySide6.QtCore import Qt, QTimer, QMetaObject, QDir, qVersion
     from PySide6.QtCore import QLibraryInfo, QTranslator
     from PySide6.QtCore import Signal, Slot  # noqa
     from PySide6.QtWidgets import QApplication, QStyleFactory
     from PySide6.QtGui import QColor, QFont, QPalette
     from PySide6.QtUiTools import QUiLoader
-except ImportError:
+elif SIGIL_QT_MAJOR_VERSION == 5:
     from PyQt5.QtCore import Qt, QTimer, QLibraryInfo, QTranslator, qVersion
     from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot  # noqa
     from PyQt5.QtWidgets import QApplication, QStyleFactory
@@ -57,8 +57,9 @@ if DEBUG:
     if 'PySide6' in sys.modules:
         print('plugin_utilities is using PySide6')
     else:
-        print('plugin_utilities using PyQt5')
+        print('plugin_utilities is using PyQt5')
     print('Sigil Qt: ', os.environ.get('SIGIL_QT_RUNTIME_VERSION'))
+    print('Sigil Qt major version: ', SIGIL_QT_MAJOR_VERSION)
 
 
 _plat = sys.platform.lower()
