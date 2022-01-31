@@ -17,16 +17,15 @@ from parsing_engine import MarkupParser
 
 if SIGIL_QT_MAJOR_VERSION == 6:
     from PySide6.QtCore import Qt, QByteArray, QCoreApplication
-    from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
+    from PySide6.QtWidgets import QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PySide6.QtWidgets import QTextEdit, QVBoxLayout, QWidget
-    from PySide6.QtGui import QIcon, QAction
+    from PySide6.QtGui import QAction
 elif SIGIL_QT_MAJOR_VERSION == 5:
     from PyQt5.QtCore import Qt, QByteArray, QCoreApplication
-    from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
+    from PyQt5.QtWidgets import QAction, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PyQt5.QtWidgets import QTextEdit, QVBoxLayout, QWidget
-    from PyQt5.QtGui import QIcon
 
 DEBUG = 0
 if DEBUG:
@@ -45,7 +44,7 @@ _t = QCoreApplication.translate
 def launch_gui(bk, prefs):
 
     icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
-    app = Application(sys.argv, bk, app_icon=QIcon(icon))
+    app = Application(sys.argv, bk, app_icon=icon)
 
     win = guiMain(bk, prefs)
     # Use exec() and not exec_() for PyQt5/PySide6 compliance

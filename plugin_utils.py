@@ -41,13 +41,13 @@ if SIGIL_QT_MAJOR_VERSION == 6:
     from PySide6.QtCore import QLibraryInfo, QTranslator
     from PySide6.QtCore import Signal, Slot  # noqa
     from PySide6.QtWidgets import QApplication, QStyleFactory
-    from PySide6.QtGui import QColor, QFont, QPalette
+    from PySide6.QtGui import QColor, QFont, QIcon, QPalette
     from PySide6.QtUiTools import QUiLoader
 elif SIGIL_QT_MAJOR_VERSION == 5:
     from PyQt5.QtCore import Qt, QTimer, QLibraryInfo, QTranslator, qVersion
     from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot  # noqa
     from PyQt5.QtWidgets import QApplication, QStyleFactory
-    from PyQt5.QtGui import QColor, QFont, QPalette
+    from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
     from PyQt5 import uic
 
 
@@ -154,7 +154,7 @@ class Application(QApplication):
 
         # set the app icon (used by all child windows)
         if app_icon is not None:
-            self.setWindowIcon(app_icon)
+            self.setWindowIcon(QIcon(app_icon))
             if iswindows:
                 ensure_windows_taskbar_icon()
 
