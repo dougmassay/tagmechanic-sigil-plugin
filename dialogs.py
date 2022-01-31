@@ -8,20 +8,20 @@ import os
 import sys
 import math
 
-from plugin_utils import Application
+from plugin_utils import Application, SIGIL_QT_MAJOR_VERSION
 # from sigil_utils import Signal, Slot
 # from sigil_utils import loadUi
 
 from utilities import UpdateChecker, taglist, combobox_defaults, remove_dupes
 from parsing_engine import MarkupParser
 
-try:
+if SIGIL_QT_MAJOR_VERSION == 6:
     from PySide6.QtCore import Qt, QByteArray, QCoreApplication
     from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
     from PySide6.QtWidgets import QTextEdit, QVBoxLayout, QWidget
     from PySide6.QtGui import QIcon, QAction
-except ImportError:
+elif SIGIL_QT_MAJOR_VERSION == 5:
     from PyQt5.QtCore import Qt, QByteArray, QCoreApplication
     from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox
     from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
