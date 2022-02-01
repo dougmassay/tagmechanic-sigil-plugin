@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="pl" sourcelanguage="en">
+<!DOCTYPE TS><TS version="2.0" language="pl" sourcelanguage="en">
 <context>
     <name>ConfigDialog</name>
     <message>
@@ -11,7 +10,7 @@
     <message>
         <location filename="../dialogs.py" line="90"/>
         <source>Comma separated list of html elements (no quotes, no angle &quot;&amp;lt;&quot; brackets).</source>
-        <translation>Oddzielona przecinkami lista elementów HTML(bez cudzysłowów, bez nawiasów &amp;quot;&amp;lt;&amp;quot;).</translation>
+        <translation>Oddzielona przecinkami lista elementów HTML (bez cudzysłowów, bez nawiasów &quot;&amp;lt;&quot;).</translation>
     </message>
     <message>
         <location filename="../dialogs.py" line="98"/>
