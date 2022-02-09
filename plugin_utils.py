@@ -37,24 +37,23 @@ DEBUG = 0
 
 
 if SIGIL_QT_MAJOR_VERSION == 6:
-    from PySide6.QtCore import Qt, QCoreApplication, QTimer, QMetaObject, QDir, qVersion
-    from PySide6.QtCore import QLibraryInfo, QTranslator
-    from PySide6.QtCore import Signal, Slot  # noqa
-    from PySide6.QtWidgets import QApplication, QStyleFactory
-    from PySide6.QtGui import QColor, QFont, QIcon, QPalette
-    from PySide6.QtUiTools import QUiLoader
+    from PySide6 import QtCore, QtGui, QtNetwork, QtPrintSupport, QtSvg, QtWebChannel, QtWidgets  # noqa: F401
+    from PySide6 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
+    from PySide6.QtCore import Qt, Signal, Slot, qVersion  # noqa: F401
+    from PySide6.QtGui import QAction  # noqa: F401
+    from PySide6.QtUiTools import QUiLoader  # noqa: F401
 elif SIGIL_QT_MAJOR_VERSION == 5:
-    from PyQt5.QtCore import Qt, QCoreApplication, QTimer, QLibraryInfo, QTranslator, qVersion
-    from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot  # noqa
-    from PyQt5.QtWidgets import QApplication, QStyleFactory
-    from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
-    from PyQt5 import uic
+    from PyQt5 import QtCore, QtGui, QtNetwork, QtPrintSupport, QtSvg, QtWebChannel, QtWidgets  # noqa: F401
+    from PyQt5 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
+    from PyQt5.QtCore import Qt, pyqtSignal as Signal, pyqtSlot as Slot, qVersion  # noqa: F401
+    from PyQt5.QtWidgets import QAction  # noqa: F401
+    from PyQt5 import uic  # noqa: F401
 
 
 PLUGIN_QT_MAJOR_VERSION = tuple(map(int, (qVersion().split("."))))[0]
 
 # Function alias used to surround translatable strings
-_t = QCoreApplication.translate
+_t = QtCore.QCoreApplication.translate
 
 if DEBUG:
     if 'PySide6' in sys.modules:
@@ -96,21 +95,21 @@ def get_qt_translations_path(app_path):
         else:
             return os.path.join(app_path, 'translations')
     else:
-        return QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+        return QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.TranslationsPath)
 
 
 ''' Helper function to convert between legacy Qt and OpenType font weights. '''
 def convertWeights(weight, inverted=False, shift=False):
     legacyToOpenTypeMap = [
-        (0, 100, QFont.Thin),
-        (12, 200, QFont.ExtraLight),
-        (25, 300, QFont.Light),
-        (50, 400, QFont.Normal),
-        (57, 500, QFont.Medium),
-        (63, 600, QFont.DemiBold),
-        (75, 700, QFont.Bold),
-        (81, 800, QFont.ExtraBold),
-        (87, 900, QFont.Black),
+        (0, 100, QtGui.QFont.Thin),
+        (12, 200, QtGui.QFont.ExtraLight),
+        (25, 300, QtGui.QFont.Light),
+        (50, 400, QtGui.QFont.Normal),
+        (57, 500, QtGui.QFont.Medium),
+        (63, 600, QtGui.QFont.DemiBold),
+        (75, 700, QtGui.QFont.Bold),
+        (81, 800, QtGui.QFont.ExtraBold),
+        (87, 900, QtGui.QFont.Black),
     ]
 
     closestDist = sys.maxsize
@@ -134,7 +133,7 @@ def convertWeights(weight, inverted=False, shift=False):
 ''' Subclass of the QApplication object that includes a lot of
     Sigil specific routines that plugin devs won't have to worry
     about (unless they choose to, of course - hence the overrides)'''
-class PluginApplication(QApplication):
+class PluginApplication(QtWidgets.QApplication):
     def __init__(self, args, bk, app_icon=None, match_fonts=True,
                 match_highdpi=True, match_dark_palette=True,
                 match_whats_this=True, load_qtbase_translations=True,
@@ -147,17 +146,17 @@ class PluginApplication(QApplication):
 
         # Match Sigil highdpi settings if necessary and if available
         if tuple_version(qVersion()) < (6, 0, 0):
-            self.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
+            self.setAttribute(Qt.AA_UseHighDpiPixmaps)
         if match_highdpi:
             self.match_sigil_highdpi()
 
         # Initialize the QApplication to be used by the plugin
         args = [program_name] + args[1:]
-        QApplication.__init__(self, args)
+        QtWidgets.QApplication.__init__(self, args)
 
         # set the app icon (used by all child windows)
         if app_icon is not None:
-            self.setWindowIcon(QIcon(app_icon))
+            self.setWindowIcon(QtGui.QIcon(app_icon))
             if iswindows:
                 ensure_windows_taskbar_icon()
 
@@ -168,7 +167,7 @@ class PluginApplication(QApplication):
         # Sigil disables the little unused question mark context button - so does Python
         if match_whats_this:
             if tuple_version(qVersion()) >= (5, 10, 0) and tuple_version(qVersion()) < (5, 15, 0):
-                self.setAttribute(Qt.ApplicationAttribute.AA_DisableWindowContextHelpButton)
+                self.setAttribute(Qt.AA_DisableWindowContextHelpButton)
 
         # Load Qt base dialog translations if available
         if load_qtbase_translations:
@@ -189,9 +188,9 @@ class PluginApplication(QApplication):
                 has_env_setting = True
                 break
         if highdpi == 'on' or (highdpi == 'detect' and not has_env_setting):
-            self.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
+            self.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         elif highdpi == 'off':
-            self.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, False)
+            self.setAttribute(Qt.AA_EnableHighDpiScaling, False)
             for p in env_vars:
                 os.environ.pop(p, None)
 
@@ -217,15 +216,15 @@ class PluginApplication(QApplication):
         if DEBUG:
             print('Setting dark palette')
 
-        p = QPalette()
+        p = QtGui.QPalette()
         sigil_colors = self.bk.color
-        dark_color = QColor(sigil_colors("Window"))
-        disabled_color = QColor(127,127,127)
-        dark_link_color = QColor(108, 180, 238)
-        text_color = QColor(sigil_colors("Text"))
+        dark_color = QtGui.QColor(sigil_colors("Window"))
+        disabled_color = QtGui.QColor(127,127,127)
+        dark_link_color = QtGui.QColor(108, 180, 238)
+        text_color = QtGui.QColor(sigil_colors("Text"))
         p.setColor(p.Window, dark_color)
         p.setColor(p.WindowText, text_color)
-        p.setColor(p.Base, QColor(sigil_colors("Base")))
+        p.setColor(p.Base, QtGui.QColor(sigil_colors("Base")))
         p.setColor(p.AlternateBase, dark_color)
         p.setColor(p.ToolTipBase, dark_color)
         p.setColor(p.ToolTipText, text_color)
@@ -236,15 +235,15 @@ class PluginApplication(QApplication):
         p.setColor(p.Disabled, p.ButtonText, disabled_color)
         p.setColor(p.BrightText, Qt.red)
         p.setColor(p.Link, dark_link_color)
-        p.setColor(p.Highlight, QColor(sigil_colors("Highlight")))
-        p.setColor(p.HighlightedText, QColor(sigil_colors("HighlightedText")))
+        p.setColor(p.Highlight, QtGui.QColor(sigil_colors("Highlight")))
+        p.setColor(p.HighlightedText, QtGui.QColor(sigil_colors("HighlightedText")))
         p.setColor(p.Disabled, p.HighlightedText, disabled_color)
 
-        self.setStyle(QStyleFactory.create("Fusion"))
+        self.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
         self.setPalette(p)
 
     def _setup_ui_font_(self, font_lst):
-        font = QApplication.font()
+        font = QtWidgets.QApplication.font()
         font.fromString(','.join(font_lst))
 
         if PLUGIN_QT_MAJOR_VERSION >= 6 and SIGIL_QT_MAJOR_VERSION < 6:
@@ -280,7 +279,7 @@ class PluginApplication(QApplication):
             # Qt 5.10.1 on Linux resets the global font on first event loop tick.
             # So workaround it by setting the font once again in a timer.
             try:
-                QTimer.singleShot(0, lambda : self._setup_ui_font_(lst))
+                QtCore.QTimer.singleShot(0, lambda : self._setup_ui_font_(lst))
             except Exception:
                 pass
 
@@ -290,7 +289,7 @@ class PluginApplication(QApplication):
         if not (self.bk.launcher_version() >= 20170227):  # Sigil 0.9.8
             print('Sigil language matching not available before Sigil 0.9.8')
             return
-        qt_translator = QTranslator(self.instance())
+        qt_translator = QtCore.QTranslator(self.instance())
         language_override = os.environ.get("SIGIL_PLUGIN_LANGUAGE_OVERRIDE")
         if language_override is not None:
             if DEBUG:
@@ -314,7 +313,7 @@ class PluginApplication(QApplication):
         if not (self.bk.launcher_version() >= 20170227):  # Sigil 0.9.8
             print('Sigil language matching not available before Sigil 0.9.8')
             return
-        plugin_translator = QTranslator(self.instance())
+        plugin_translator = QtCore.QTranslator(self.instance())
         language_override = os.environ.get("SIGIL_PLUGIN_LANGUAGE_OVERRIDE")
         if language_override is not None:
             if DEBUG:
@@ -383,10 +382,10 @@ if 'PySide6' in sys.modules:
         if os.environ('PYSIDE_LOADUI_CWD') is not None:
             loader.setWorkingDirectory(os.environ('PYSIDE_LOADUI_CWD'))
         else:
-            loader.setWorkingDirectory(QDir(SCRIPT_DIRECTORY))
+            loader.setWorkingDirectory(QtCore.QDir(SCRIPT_DIRECTORY))
 
         widget = loader.load(uifile)
-        QMetaObject.connectSlotsByName(widget)
+        QtCore.QMetaObject.connectSlotsByName(widget)
         return widget
 
 # Otherwise return the standard PyQt5 loadUi object
