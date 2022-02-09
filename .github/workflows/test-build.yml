@@ -19,21 +19,6 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Cache Qt
-      id: cache-qt
-      uses: actions/cache@v2
-      with:
-        path: ${{runner.workspace}}/Qt
-        key: ${{ runner.os }}-qttools-${{ hashFiles('**/reset-caches.txt') }}
-  
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
-      with:
-        version: '5.12.3'
-        dir: ${{runner.workspace}}/Qt
-        setup-python: 'false'
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
-
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
@@ -64,6 +49,21 @@ jobs:
         commit_user_email: my-github-actions-bot@example.org
         commit_author: Author <actions@github.com>
         commit_message: Update TS files with 5.12 lupdate
+
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v2
+      with:
+        path: ${{runner.workspace}}/Qt
+        key: ${{ runner.os }}-qttools-${{ hashFiles('**/reset-caches.txt') }}
+  
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.12.3'
+        dir: ${{runner.workspace}}/Qt
+        setup-python: 'false'
+        cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
     - name: Build Plugin
       run: python buildplugin --language
