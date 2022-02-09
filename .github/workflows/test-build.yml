@@ -36,9 +36,7 @@ jobs:
       with:
         version: '5.12.3'
         dir: ${{runner.workspace}}/Qt
-        set-env: 'false'
-        tools-only: 'true'
-        setup-python: 'false'
+        setup-python: 'true'
         cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
     - uses: actions/cache@v2
