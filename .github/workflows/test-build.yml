@@ -19,11 +19,6 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-
     - name: Cache Qt
       id: cache-qt
       uses: actions/cache@v2
@@ -38,11 +33,6 @@ jobs:
         dir: ${{runner.workspace}}/Qt
         setup-python: 'true'
         cached: ${{ steps.cache-qt.outputs.cache-hit }}
-
-    - uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pipcache-${{ hashFiles('**/reset-caches.txt') }}
 
     - name: Install dependencies
       run: |
