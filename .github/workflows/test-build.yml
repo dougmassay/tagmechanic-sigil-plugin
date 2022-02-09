@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
@@ -53,6 +55,18 @@ jobs:
         which lrelease
         flake8 buildplugin
         flake8 .
+
+    - name: Commit any language TS files updated
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_user_name: My GitHub Actions Bot
+        commit_user_email: my-github-actions-bot@example.org
+        commit_author: Author <actions@github.com>
+        commit_message: Update TS files with 5.9.5 lupdate
+
+    - name: Update language files
+      run: python tsupdate
+
     - name: Build Plugin
       run: python buildplugin --language
 
