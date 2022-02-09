@@ -33,7 +33,6 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        which lrelease
         flake8 buildplugin
         flake8 .
 
@@ -66,7 +65,9 @@ jobs:
         cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
     - name: Build Plugin
-      run: python buildplugin --language
+      run: |
+        which lrelease
+        python buildplugin --language
 
     - uses: actions/upload-artifact@v2
       with:
