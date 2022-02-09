@@ -48,6 +48,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8
+        pip install PyQt5==5.10.1
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Lint with flake8
