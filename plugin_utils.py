@@ -137,7 +137,7 @@ class PluginApplication(QtWidgets.QApplication):
     def __init__(self, args, bk, app_icon=None, match_fonts=True,
                 match_highdpi=True, match_dark_palette=True,
                 match_whats_this=True, dont_use_native_menubars=True,
-                load_qtbase_translations=True, load_qtplugin_translations=True, 
+                load_qtbase_translations=True, load_qtplugin_translations=True,
                 plugin_trans_folder=None):
 
         # Keep menubars in the application windows on all platforms
