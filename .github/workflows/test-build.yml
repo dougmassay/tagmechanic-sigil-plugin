@@ -44,9 +44,9 @@ jobs:
     - name: Commit any language TS files updated
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_user_name: My GitHub Actions Bot
-        commit_user_email: my-github-actions-bot@example.org
-        commit_author: Author <actions@github.com>
+        commit_user_name: GitHub Actions Bot
+        commit_user_email: actions-bot@example.org
+        commit_author: Doug Massay <dougmassay@users.noreply.github.com>
         commit_message: Update TS files with 5.12 lupdate
 
     - name: Cache Qt
