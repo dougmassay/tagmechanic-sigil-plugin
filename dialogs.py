@@ -11,7 +11,7 @@ import math
 from utilities import UpdateChecker, taglist, combobox_defaults, remove_dupes
 from parsing_engine import MarkupParser
 
-from plugin_utils import Qt, QtCore, QtWidgets, QAction
+from plugin_utils import Qt, QtCore, QtGui, QtWidgets, QAction
 from plugin_utils import PluginApplication, iswindows, _t  # , Signal, Slot, loadUi
 
 
@@ -30,7 +30,8 @@ def launch_gui(bk, prefs):
 
     icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
     mdp = True if iswindows else False
-    app = PluginApplication(sys.argv, bk, app_icon=icon, match_dark_palette=mdp)
+    app = PluginApplication(sys.argv, bk, app_icon=icon, match_dark_palette=mdp,
+                            dont_use_native_menubars=True)
 
     win = guiMain(bk, prefs)
     # Use exec() and not exec_() for PyQt5/PySide6 compliance
@@ -176,12 +177,20 @@ class guiMain(QtWidgets.QMainWindow):
         self.NO_CHANGE_STR = _t('guiMain', 'No change')
         self.setWindowTitle(_t('guiMain', 'Tag Mechanic'))
 
-        configAct = QAction(_t('guiMain', '&Config'), self)
+        configAct = QAction(_t('guiMain', 'Config'), self)
+        configAct.setShortcut('Ctrl+Alt+C')
+        tooltip = _t('guiMain','Configure')
+        configAct.setToolTip(tooltip + ' ' + self.bk._w.plugin_name)
+        icon = os.path.join(self.bk._w.plugin_dir, self.bk._w.plugin_name, 'config.svg')
+        configAct.setIcon(QtGui.QIcon(icon))
         configAct.triggered.connect(self.showConfig)
 
-        menubar = self.menuBar()
-        fileMenu = menubar.addMenu(_t('guiMain', '&Edit'))
-        fileMenu.addAction(configAct)
+        editToolBar = self.addToolBar(_t('guiMain', 'Edit'))
+        editToolBar.setMovable(False)
+        editToolBar.setFloatable(False)
+        editToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
+        editToolBar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        editToolBar.addAction(configAct)
 
         layout = QtWidgets.QVBoxLayout()
 

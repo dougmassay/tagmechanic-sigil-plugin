@@ -33,20 +33,20 @@ import inspect
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 e = os.environ.get('SIGIL_QT_RUNTIME_VERSION', '5.10.0')
 SIGIL_QT_MAJOR_VERSION = tuple(map(int, (e.split("."))))[0]
-DEBUG = 0
+DEBUG = 1
 
 
 if SIGIL_QT_MAJOR_VERSION == 6:
     from PySide6 import QtCore, QtGui, QtNetwork, QtPrintSupport, QtSvg, QtWebChannel, QtWidgets  # noqa: F401
     from PySide6 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
     from PySide6.QtCore import Qt, Signal, Slot, qVersion  # noqa: F401
-    from PySide6.QtGui import QAction  # noqa: F401
+    from PySide6.QtGui import QAction, QActionGroup  # noqa: F401
     from PySide6.QtUiTools import QUiLoader  # noqa: F401
 elif SIGIL_QT_MAJOR_VERSION == 5:
     from PyQt5 import QtCore, QtGui, QtNetwork, QtPrintSupport, QtSvg, QtWebChannel, QtWidgets  # noqa: F401
     from PyQt5 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
     from PyQt5.QtCore import Qt, pyqtSignal as Signal, pyqtSlot as Slot, qVersion  # noqa: F401
-    from PyQt5.QtWidgets import QAction  # noqa: F401
+    from PyQt5.QtWidgets import QAction, QActionGroup  # noqa: F401
     from PyQt5 import uic  # noqa: F401
 
 
@@ -136,7 +136,7 @@ def convertWeights(weight, inverted=False, shift=False):
 class PluginApplication(QtWidgets.QApplication):
     def __init__(self, args, bk, app_icon=None, match_fonts=True,
                 match_highdpi=True, match_dark_palette=True,
-                match_whats_this=True, dont_use_native_menubars=True,
+                match_whats_this=True, dont_use_native_menubars=False,
                 load_qtbase_translations=True, load_qtplugin_translations=True,
                 plugin_trans_folder=None):
 
@@ -145,7 +145,7 @@ class PluginApplication(QtWidgets.QApplication):
             self.setAttribute(Qt.AA_DontUseNativeMenuBar)
 
         self.bk = bk
-        program_name = 'sigil_plugin_{}'.format(bk._w.plugin_name.lower())
+        program_name = '{}'.format(bk._w.plugin_name)
         if plugin_trans_folder is None:
             plugin_trans_folder = os.path.join(self.bk._w.plugin_dir, self.bk._w.plugin_name, 'translations')
 

@@ -27,6 +27,7 @@ PLUGIN_FILES = ['dialogs.py',
             'plugin.xml',
             'plugin_utils.py',
             'utilities.py',
+            'config.svg',
             'plugin.svg',
             'plugin.png',]
 
