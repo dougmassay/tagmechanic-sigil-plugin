@@ -233,17 +233,17 @@
     <message>
         <location filename="../dialogs.py" line="180"/>
         <source>Config</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguracja</translation>
     </message>
     <message>
         <location filename="../dialogs.py" line="182"/>
         <source>Configure</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguruj</translation>
     </message>
     <message>
         <location filename="../dialogs.py" line="188"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Edycja</translation>
     </message>
 </context>
 </TS>
