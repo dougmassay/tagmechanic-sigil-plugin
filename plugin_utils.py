@@ -38,13 +38,13 @@ DEBUG = 1
 
 if SIGIL_QT_MAJOR_VERSION == 6:
     from PySide6 import QtCore, QtGui, QtNetwork, QtPrintSupport, QtSvg, QtWebChannel, QtWidgets  # noqa: F401
-    from PySide6 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
+    # from PySide6 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
     from PySide6.QtCore import Qt, Signal, Slot, qVersion  # noqa: F401
     from PySide6.QtGui import QAction, QActionGroup  # noqa: F401
     from PySide6.QtUiTools import QUiLoader  # noqa: F401
 elif SIGIL_QT_MAJOR_VERSION == 5:
     from PyQt5 import QtCore, QtGui, QtNetwork, QtPrintSupport, QtSvg, QtWebChannel, QtWidgets  # noqa: F401
-    from PyQt5 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
+    # from PyQt5 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
     from PyQt5.QtCore import Qt, pyqtSignal as Signal, pyqtSlot as Slot, qVersion  # noqa: F401
     from PyQt5.QtWidgets import QAction, QActionGroup  # noqa: F401
     from PyQt5 import uic  # noqa: F401
