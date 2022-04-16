@@ -33,18 +33,45 @@ import inspect
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 e = os.environ.get('SIGIL_QT_RUNTIME_VERSION', '5.10.0')
 SIGIL_QT_MAJOR_VERSION = tuple(map(int, (e.split("."))))[0]
-DEBUG = 1
+DEBUG = 0
 
 
 if SIGIL_QT_MAJOR_VERSION == 6:
     from PySide6 import QtCore, QtGui, QtNetwork, QtPrintSupport, QtSvg, QtWebChannel, QtWidgets  # noqa: F401
-    # from PySide6 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
+    # Plugins that don't use QtWebEngine shouldn't fail when external Pythons
+    # don't have PySide6 installed. Bundled Pythons will always have PySide6
+    # installed startting with Qt6 releases.
+    try: 
+        from PySide6 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
+        from PySide6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineSettings  # noqa: F401
+    except ImportError:
+        print('QtWebEngine PySide6 Python bindings not found.\n')
+        print('If this plugin needs QtWebEngine, make sure those bindings are installed.')
+        pass
+    else:
+        if DEBUG:
+            print('QtWebEngine PySide6 Python bindings found.')
+
     from PySide6.QtCore import Qt, Signal, Slot, qVersion  # noqa: F401
     from PySide6.QtGui import QAction, QActionGroup  # noqa: F401
     from PySide6.QtUiTools import QUiLoader  # noqa: F401
 elif SIGIL_QT_MAJOR_VERSION == 5:
     from PyQt5 import QtCore, QtGui, QtNetwork, QtPrintSupport, QtSvg, QtWebChannel, QtWidgets  # noqa: F401
-    # from PyQt5 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
+    # Plugins that don't use QtWebEngine shouldn't fail when external Pythons
+    # Don't have PyQt5 installed. And Sigil versions before PyQtWebEngine was added (Pre-1.6)
+    # should be able to run plugins that use this script (but don't use QtWebEngine)
+    try:
+        from PyQt5 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
+        from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineSettings   # noqa: F401
+    except ImportError:
+        print('QtWebEngine PyQt5 Python bindings not found.')
+        print('If this plugin needs QtWebEngine make sure those bindings are installed')
+        print('(or use Sigil 1.6 or newer, which has it bundled).')
+        pass
+    else:
+        if DEBUG:
+            print('QtWebEngine PyQt5 Python bindings found.')
+
     from PyQt5.QtCore import Qt, pyqtSignal as Signal, pyqtSlot as Slot, qVersion  # noqa: F401
     from PyQt5.QtWidgets import QAction, QActionGroup  # noqa: F401
     from PyQt5 import uic  # noqa: F401
@@ -67,6 +94,15 @@ if DEBUG:
 _plat = sys.platform.lower()
 iswindows = 'win32' in _plat or 'win64' in _plat
 ismacos = isosx = 'darwin' in _plat
+
+
+''' PyQt5 translations don't like bytestrings
+    and PySide6 doesn't like utf-8 '''
+def trans_enc(s):
+    if 'PySide6' in sys.modules:
+        return s
+    else:
+        return s.encode('utf-8')
 
 
 ''' Return a tuple of a version string for easy comparison'''
@@ -135,8 +171,8 @@ def convertWeights(weight, inverted=False, shift=False):
     about (unless they choose to, of course - hence the overrides)'''
 class PluginApplication(QtWidgets.QApplication):
     def __init__(self, args, bk, app_icon=None, match_fonts=True,
-                match_highdpi=True, match_dark_palette=True,
-                match_whats_this=True, dont_use_native_menubars=False,
+                match_highdpi=True, match_dark_palette=False,
+                match_whats_this=True, dont_use_native_menubars=True,
                 load_qtbase_translations=True, load_qtplugin_translations=True,
                 plugin_trans_folder=None):
 
@@ -224,7 +260,7 @@ class PluginApplication(QtWidgets.QApplication):
         p = QtGui.QPalette()
         sigil_colors = self.bk.color
         dark_color = QtGui.QColor(sigil_colors("Window"))
-        disabled_color = QtGui.QColor(127,127,127)
+        disabled_color = QtGui.QColor(127, 127, 127)
         dark_link_color = QtGui.QColor(108, 180, 238)
         text_color = QtGui.QColor(sigil_colors("Text"))
         p.setColor(p.Window, dark_color)
@@ -384,8 +420,9 @@ if 'PySide6' in sys.modules:
         # If it's in another directory, however, you may need to set the
         # PYSIDE_LOADUI_CWD environment variable to the resource's directory first.
         # Best practice is not to define icons in the .ui file. Do it at the app level.
-        if os.environ('PYSIDE_LOADUI_CWD') is not None:
-            loader.setWorkingDirectory(os.environ('PYSIDE_LOADUI_CWD'))
+        e = os.environ.get('PYSIDE_LOADUI_CWD', None)
+        if e is not None:
+            loader.setWorkingDirectory(e)
         else:
             loader.setWorkingDirectory(QtCore.QDir(SCRIPT_DIRECTORY))
 
