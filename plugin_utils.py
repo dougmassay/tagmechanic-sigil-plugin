@@ -41,7 +41,7 @@ if SIGIL_QT_MAJOR_VERSION == 6:
     # Plugins that don't use QtWebEngine shouldn't fail when external Pythons
     # don't have PySide6 installed. Bundled Pythons will always have PySide6
     # installed startting with Qt6 releases.
-    try: 
+    try:
         from PySide6 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
         from PySide6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineSettings  # noqa: F401
     except ImportError:
