@@ -45,7 +45,7 @@ if SIGIL_QT_MAJOR_VERSION == 6:
         from PySide6 import QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
         from PySide6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineSettings  # noqa: F401
     except ImportError:
-        print('QtWebEngine PySide6 Python bindings not found.\n')
+        print('QtWebEngine PySide6 Python bindings not found.')
         print('If this plugin needs QtWebEngine, make sure those bindings are installed.')
         pass
     else:
