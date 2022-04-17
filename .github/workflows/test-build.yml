@@ -82,6 +82,7 @@ jobs:
       with:
         name: tagmech-artifact
         path: ./*.zip
+        retention-days: 3
 
     - name: Create Release
       if: startswith( github.ref, 'refs/tags/')
