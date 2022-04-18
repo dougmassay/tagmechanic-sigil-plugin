@@ -93,7 +93,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        name: $PLUGIN_NAME ${{ steps.get_tag_name.outputs.TAGNAME }} Released
+        name: ${{ env.PLUGIN_NAME }} ${{ steps.get_tag_name.outputs.TAGNAME }}
         body: |
           Changes in this Release
           - First Change
