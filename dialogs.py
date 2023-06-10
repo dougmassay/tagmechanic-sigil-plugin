@@ -169,7 +169,7 @@ class guiMain(QtWidgets.QMainWindow):
     def setup_ui(self):
         app = PluginApplication.instance()
         p = app.palette()
-        link_color = p.color(p.Active, p.Link).name()
+        link_color = p.color(QtGui.QPalette.Active, QtGui.QPalette.Link).name()
 
         DELETE_STR = _t('guiMain', 'Delete')
         MODIFY_STR = _t('guiMain', 'Modify')
