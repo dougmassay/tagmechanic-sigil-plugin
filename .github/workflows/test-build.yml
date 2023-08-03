@@ -21,17 +21,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Get tag name
       if: startswith( github.ref, 'refs/tags/')
       id: get_tag_name
-      run: echo ::set-output name=TAGNAME::${GITHUB_REF/refs\/tags\//}
+      run: echo "TAGNAME=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
 
     - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.8
 
@@ -62,18 +62,19 @@ jobs:
 
     - name: Cache Qt
       id: cache-qt
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{runner.workspace}}/Qt
         key: ${{ runner.os }}-qttools-${{ hashFiles('**/reset-caches.txt') }}
   
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v3
       with:
         version: '5.12.3'
         dir: ${{runner.workspace}}/Qt
         setup-python: 'false'
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        archives: 'qtbase qttools icu'
+        cache: ${{ steps.cache-qt.outputs.cache-hit }}
 
     - name: Build Plugin
       run: |
