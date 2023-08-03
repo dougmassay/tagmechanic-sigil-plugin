@@ -15,7 +15,7 @@ from plugin_utils import Qt, QtCore, QtGui, QtWidgets, QAction
 from plugin_utils import PluginApplication, iswindows, _t  # , Signal, Slot, loadUi
 
 
-DEBUG = 1
+DEBUG = 0
 if DEBUG:
     if 'PySide6' in sys.modules:
         print('Plugin using PySide6')
