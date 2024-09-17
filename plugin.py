@@ -6,8 +6,11 @@ from __future__ import unicode_literals, division, absolute_import, print_functi
 
 import sys
 import os
+import json
+from pathlib import Path
 
 from dialogs import launch_gui
+from parsing_engine import MarkupParser
 from utilities import setupPrefs, check_for_custom_icon, get_icon_color, change_icon_color
 
 
@@ -64,6 +67,43 @@ def run(bk):
     else:
         print('Processing headless run with: ' + bk._w.automate_parameter)
         ''' Process headless run '''
+        two_up = Path(bk._w.plugin_dir).resolve().parents[0]
+        headless_prefs = two_up.joinpath('plugins_prefs', bk._w.plugin_name, 'headless.json')
+        if headless_prefs.exists and headless_prefs.is_file():
+            with open(headless_prefs, 'r', encoding='utf-8') as f:
+                criteria = json.load(f)
+            totals = 0
+            # Loop through all text files in epub
+            for (ident, href) in bk.text_iter():
+                # Param 1 - the contents of the (x)html file.
+                criteria['html'] = bk.readfile(ident)
+                if not isinstance(criteria['html'], str):
+                    criteria['html'] = str(criteria['html'], 'utf-8')
+
+                # Hand off the "criteria" parameters dictionary to the parsing engine
+                parser = MarkupParser(criteria)
+
+                # Retrieve the new markup and the number of occurrences changed
+                try:
+                    html, occurrences = parser.processml()
+                except Exception:
+                    print('{} {}! {}.\n'.format(
+                        'Error parsing', href, 'File skipped'))
+                    continue
+
+                # Report whether or not changes were made (and how many)
+                totals += occurrences
+                if occurrences:
+                    # write changed markup back to file
+                    bk.writefile(ident, html)
+                    print('{} {}:   {}'.format(
+                        'Occurrences found/changed in', href, int(occurrences)))
+                else:
+                    print('{} {}\n'.format(
+                        'Criteria not found in', href))
+        else:
+            print('"headless.json" file does not exist in the plugin prefs directory')
+            return -1
     return 0
 
 

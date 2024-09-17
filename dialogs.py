@@ -7,6 +7,8 @@ from __future__ import unicode_literals, division, absolute_import, print_functi
 import os
 import sys
 import math
+import json
+from pathlib import Path
 
 from utilities import UpdateChecker, taglist, combobox_defaults, remove_dupes
 from parsing_engine import MarkupParser
@@ -288,6 +290,14 @@ class guiMain(QtWidgets.QMainWindow):
         layout.addWidget(self.text_panel)
 
         layout.addSpacing(10)
+        first_button_layout = QtWidgets.QHBoxLayout()
+        layout.addLayout(first_button_layout)
+        save_config_button = QtWidgets.QPushButton(_t('guiMain', 'Save Config'), self)
+        save_config_button.setToolTip('<p>{}'.format(_t('guiMain', 'Save current config for headless use')))
+        first_button_layout.addWidget(save_config_button)
+        save_config_button.clicked.connect(self._save_config_clicked)
+
+        layout.addSpacing(10)
         button_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(button_layout)
         self.process_button = QtWidgets.QPushButton(_t('guiMain', 'Process'), self)
@@ -353,9 +363,8 @@ class guiMain(QtWidgets.QMainWindow):
         self.attr_combo.addItems(self.combobox_values['attrs'])
         self.attr_combo.addItem(self.NO_ATTRIB_STR)
 
-    def _process_clicked(self):
+    def validate(self):
         criteria = {}
-        global PROCESSED
         criteria['tag'] = str(self.tag_combo.currentText())
         if self.action_combo.currentIndex() == 0:
             criteria['action'] = 'delete'
@@ -372,7 +381,7 @@ class guiMain(QtWidgets.QMainWindow):
             title = _t('guiMain', 'Error')
             msg = '<p>{0}'.format(
                 _t('guiMain', 'Must enter a value for the attribute selected'))
-            return QtWidgets.QMessageBox.warning(self, title, msg, QtWidgets.QMessageBox.Ok)
+            return (QtWidgets.QMessageBox.warning(self, title, msg, QtWidgets.QMessageBox.Ok), {})
         criteria['srch_str'] = srch_str
 
         criteria['srch_method'] = 'normal'
@@ -386,7 +395,7 @@ class guiMain(QtWidgets.QMainWindow):
             title = _t('guiMain', 'Error')
             msg = '<p>{0}'.format(
                 _t('guiMain', 'What--exactly--would that achieve?'))
-            return QtWidgets.QMessageBox.question(self, title, msg, QtWidgets.QMessageBox.Ok)
+            return (QtWidgets.QMessageBox.question(self, title, msg, QtWidgets.QMessageBox.Ok), {})
 
         criteria['new_str'] = str(self.newattr_txt.displayText())
         criteria['copy'] = False
@@ -394,6 +403,13 @@ class guiMain(QtWidgets.QMainWindow):
             criteria['copy'] = True
         if not len(criteria['new_str']):
             criteria['new_str'] = ''
+        return (None, criteria)
+
+    def _process_clicked(self):
+        error, criteria = self.validate()
+        if error is not None:
+            return
+        global PROCESSED
 
         # Disable the 'Process' button, disable the context customization menu
         self.process_button.setDisabled(True)
@@ -448,6 +464,15 @@ class guiMain(QtWidgets.QMainWindow):
             self.text_panel.insertHtml('<br><h4>{}</h4>'.format(
                 _t('guiMain', 'No changes made to book')))
         self.text_panel.insertHtml('<br><h4>{}</h4>'.format(_t('guiMain', 'Finished')))
+
+    def _save_config_clicked(self):
+        error, criteria = self.validate()
+        if error is not None:
+            return
+        two_up = Path(self.bk._w.plugin_dir).resolve().parents[0]
+        headless_prefs = two_up.joinpath('plugins_prefs', self.bk._w.plugin_name, 'headless.json')
+        with open(headless_prefs, 'w', encoding='utf-8') as f:
+            json.dump(criteria, f, indent=2, ensure_ascii=False)
 
     def _quit_clicked(self):
         self.misc_prefs['windowGeometry'] = self.saveGeometry().toHex().data().decode('ascii')
