@@ -115,6 +115,14 @@ class ConfigDialog(QtWidgets.QDialog):
         right_layout = QtWidgets.QHBoxLayout()
         right_layout.setAlignment(Qt.AlignRight)
         layout.addLayout(right_layout)
+
+        self.auto_headless = QtWidgets.QCheckBox(_t('ConfigDialog', 'Plugin runs headless in Automate Lists'), self)
+        self.auto_headless.setToolTip('<p>{}'.format(
+            _t('ConfigDialog', 'The GUI will not be used when the plugin is run via an Automate List')))
+        self.auto_headless.setChecked(self.gui.misc_prefs['automate_runs_headless'])
+        right_layout.addWidget(self.auto_headless)
+        right_layout.insertSpacing(1, 30)
+
         reset_button = QtWidgets.QPushButton(_t('ConfigDialog', 'Reset all defaults'), self)
         reset_button.setToolTip('<p>{}'.format(_t('ConfigDialog', 'Reset all settings to original defaults.')))
         reset_button.clicked.connect(self.reset_defaults)
@@ -136,12 +144,14 @@ class ConfigDialog(QtWidgets.QDialog):
         tmp_list = str(self.attrs_txtBox.displayText()).split(',')
         tmp_list = remove_dupes([x.strip(' ') for x in tmp_list])
         self.combobox_values['attrs'] = list(filter(None, tmp_list))
+        self.gui.misc_prefs['automate_runs_headless'] = self.auto_headless.isChecked()
         self.accept()
 
     def reset_defaults(self):
         caption= _t('ConfigDialog', 'Are you sure?')
         msg = '<p>{}'.format(_t('ConfigDialog', 'Reset all customizable options to their original defaults?'))
         if QtWidgets.QMessageBox.question(self, caption, msg, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel) == QtWidgets.QMessageBox.Yes:
+            self.gui.misc_prefs['automate_runs_headless'] = False
             for tag in taglist:
                 self.combobox_values['{}_changes'.format(tag)] = combobox_defaults['{}_changes'.format(tag)]
             self.combobox_values['attrs'] = combobox_defaults['attrs']
