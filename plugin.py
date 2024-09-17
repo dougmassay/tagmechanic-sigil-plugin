@@ -28,7 +28,7 @@ def run(bk):
     if not count:
         print('No text files selected in Book Browser!')
         return -1
-    
+
     global prefs
 
     prefs = bk.getPrefs()
@@ -62,7 +62,7 @@ def run(bk):
         print('Automate parameter not set')
         return -1
     else:
-        print('Processing headless run with: ' + bk._w.automate_parameter)    
+        print('Processing headless run with: ' + bk._w.automate_parameter)
         ''' Process headless run '''
     return 0
 
